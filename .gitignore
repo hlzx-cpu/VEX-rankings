@@ -1,0 +1,10 @@
+# ── 敏感配置文件（绝不提交！）──
+.env
+
+# ── Python 缓存 ──
+__pycache__/
+*.pyc
+*.pyo
+
+# ── 数据缓存（可选，若不想提交生成数据） ──
+dashboard_data.csv
