@@ -467,60 +467,105 @@ def generate_interactive_html(df: pd.DataFrame) -> None:
 
     # ── 构建完整 HTML 页面
     html_template = f"""<!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="dark">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>VURC 2025-2026 Rankings</title>
   <style>
     *, *::before, *::after {{ box-sizing: border-box; margin: 0; padding: 0; }}
+
+    /* ── CSS 变量：暗色主题（默认） ── */
+    :root, [data-theme="dark"] {{
+      --bg-body:      #0d1117;
+      --bg-toolbar:   #161b22;
+      --bg-input:     #0d1117;
+      --border:       #30363d;
+      --text:         #c9d1d9;
+      --text-heading: #e6edf3;
+      --text-dim:     #8b949e;
+      --text-link:    #58a6ff;
+      --bg-table-th:  #21262d;
+      --bg-table-hover: #1c2128;
+      --border-table: #21262d;
+      --plot-paper:   #0d1117;
+      --plot-bg:      #161b22;
+      --plot-grid:    #21262d;
+      --btn-sec-bg:   #21262d;
+      --btn-sec-hover:#30363d;
+      --toggle-icon:  '☀️';
+    }}
+
+    /* ── CSS 变量：浅色主题 ── */
+    [data-theme="light"] {{
+      --bg-body:      #ffffff;
+      --bg-toolbar:   #f6f8fa;
+      --bg-input:     #ffffff;
+      --border:       #d0d7de;
+      --text:         #1f2328;
+      --text-heading: #1f2328;
+      --text-dim:     #656d76;
+      --text-link:    #0969da;
+      --bg-table-th:  #f6f8fa;
+      --bg-table-hover: #f0f3f6;
+      --border-table: #d8dee4;
+      --plot-paper:   #ffffff;
+      --plot-bg:      #f6f8fa;
+      --plot-grid:    #d0d7de;
+      --btn-sec-bg:   #f3f4f6;
+      --btn-sec-hover:#e5e7eb;
+      --toggle-icon:  '🌙';
+    }}
+
     body {{
-      background: #0d1117;
-      color: #c9d1d9;
+      background: var(--bg-body);
+      color: var(--text);
       font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
       min-height: 100vh;
+      transition: background 0.25s, color 0.25s;
     }}
     .toolbar {{
       display: flex;
       align-items: center;
       gap: 12px;
       padding: 14px 24px;
-      background: #161b22;
-      border-bottom: 1px solid #30363d;
+      background: var(--bg-toolbar);
+      border-bottom: 1px solid var(--border);
       flex-wrap: wrap;
+      transition: background 0.25s;
     }}
     .toolbar h1 {{
       font-size: 18px;
       font-weight: 600;
-      color: #e6edf3;
+      color: var(--text-heading);
       margin-right: auto;
       white-space: nowrap;
     }}
     .toolbar input[type="text"] {{
-      background: #0d1117;
-      border: 1px solid #30363d;
+      background: var(--bg-input);
+      border: 1px solid var(--border);
       border-radius: 6px;
-      color: #c9d1d9;
+      color: var(--text);
       padding: 6px 12px;
       font-size: 14px;
       width: 220px;
       outline: none;
-      transition: border-color 0.2s;
+      transition: border-color 0.2s, background 0.25s, color 0.25s;
     }}
     .toolbar input[type="text"]:focus {{
-      border-color: #58a6ff;
+      border-color: var(--text-link);
     }}
     .toolbar input[type="text"]::placeholder {{
-      color: #484f58;
+      color: var(--text-dim);
     }}
     .btn {{
       padding: 6px 16px;
       font-size: 13px;
       font-weight: 500;
-      border: 1px solid #30363d;
+      border: 1px solid var(--border);
       border-radius: 6px;
       cursor: pointer;
-      transition: background 0.15s, border-color 0.15s;
+      transition: background 0.15s, border-color 0.15s, color 0.15s;
     }}
     .btn-primary {{
       background: #238636;
@@ -529,10 +574,18 @@ def generate_interactive_html(df: pd.DataFrame) -> None:
     }}
     .btn-primary:hover {{ background: #2ea043; }}
     .btn-secondary {{
-      background: #21262d;
-      color: #c9d1d9;
+      background: var(--btn-sec-bg);
+      color: var(--text);
     }}
-    .btn-secondary:hover {{ background: #30363d; }}
+    .btn-secondary:hover {{ background: var(--btn-sec-hover); }}
+    .btn-toggle {{
+      background: var(--btn-sec-bg);
+      color: var(--text);
+      font-size: 16px;
+      padding: 5px 12px;
+      line-height: 1;
+    }}
+    .btn-toggle:hover {{ background: var(--btn-sec-hover); }}
     #chart-container {{
       padding: 8px 16px;
     }}
@@ -549,22 +602,22 @@ def generate_interactive_html(df: pd.DataFrame) -> None:
       font-size: 13px;
     }}
     #info-panel th {{
-      background: #21262d;
-      color: #e6edf3;
+      background: var(--bg-table-th);
+      color: var(--text-heading);
       padding: 6px 14px;
       text-align: left;
-      border-bottom: 2px solid #30363d;
+      border-bottom: 2px solid var(--border);
       font-weight: 600;
       white-space: nowrap;
     }}
     #info-panel td {{
       padding: 5px 14px;
-      border-bottom: 1px solid #21262d;
-      color: #c9d1d9;
+      border-bottom: 1px solid var(--border-table);
+      color: var(--text);
       white-space: nowrap;
     }}
     #info-panel tr:hover td {{
-      background: #1c2128;
+      background: var(--bg-table-hover);
     }}
   </style>
 </head>
@@ -574,6 +627,7 @@ def generate_interactive_html(df: pd.DataFrame) -> None:
     <input type="text" id="team-input" placeholder="e.g.  SJTU1/SJTU2" />
     <button class="btn btn-primary" id="btn-search">🔍 Highlight</button>
     <button class="btn btn-secondary" id="btn-clear">✕ Clear</button>
+    <button class="btn btn-toggle" id="btn-theme" title="Toggle light/dark mode">☀️</button>
   </div>
   <div id="info-panel"></div>
   <div id="chart-container">
@@ -587,15 +641,89 @@ def generate_interactive_html(df: pd.DataFrame) -> None:
     var input     = document.getElementById('team-input');
     var btnSearch = document.getElementById('btn-search');
     var btnClear  = document.getElementById('btn-clear');
+    var btnTheme  = document.getElementById('btn-theme');
     var infoPanel = document.getElementById('info-panel');
 
-    /* ── 解析输入：按 / 分割为多个关键词 ── */
+    /* ═══════════════ 主题切换 ═══════════════ */
+    var themes = {{
+      dark: {{
+        paper_bgcolor: '#0d1117',
+        plot_bgcolor:  '#161b22',
+        gridcolor:     '#21262d',
+        fontcolor:     '#c9d1d9',
+        titlecolor:    '#e6edf3',
+        tickcolor:     '#8b949e',
+        textcolor:     '#c9d1d9',
+        textcolorDim:  '#8b949e',
+        cbTitleColor:  '#c9d1d9',
+        cbTickColor:   '#8b949e',
+        icon:          '☀️'
+      }},
+      light: {{
+        paper_bgcolor: '#ffffff',
+        plot_bgcolor:  '#f6f8fa',
+        gridcolor:     '#d0d7de',
+        fontcolor:     '#1f2328',
+        titlecolor:    '#1f2328',
+        tickcolor:     '#656d76',
+        textcolor:     '#24292f',
+        textcolorDim:  '#656d76',
+        cbTitleColor:  '#1f2328',
+        cbTickColor:   '#656d76',
+        icon:          '🌙'
+      }}
+    }};
+
+    function currentTheme() {{
+      return document.documentElement.getAttribute('data-theme') || 'dark';
+    }}
+
+    function applyPlotlyTheme(t) {{
+      if (!graphDiv || !graphDiv.data) return;
+      var s = themes[t];
+
+      // 布局更新
+      Plotly.relayout(graphDiv, {{
+        'paper_bgcolor': s.paper_bgcolor,
+        'plot_bgcolor':  s.plot_bgcolor,
+        'xaxis.gridcolor': s.gridcolor,
+        'yaxis.gridcolor': s.gridcolor,
+        'xaxis.tickfont.color': s.tickcolor,
+        'yaxis.tickfont.color': s.tickcolor,
+        'xaxis.title.font.color': s.fontcolor,
+        'yaxis.title.font.color': s.fontcolor,
+        'title.font.color': s.titlecolor,
+        'font.color': s.fontcolor
+      }});
+
+      // 每个 trace 的文字和 colorbar 颜色
+      for (var ti = 0; ti < graphDiv.data.length; ti++) {{
+        var update = {{
+          'textfont.color': ti === 0 ? s.textcolor : s.textcolorDim
+        }};
+        // 只对有 colorbar 的 trace 更新颜色
+        if (graphDiv.data[ti].marker && graphDiv.data[ti].marker.colorbar) {{
+          update['marker.colorbar.title.font.color'] = s.cbTitleColor;
+          update['marker.colorbar.tickfont.color']    = s.cbTickColor;
+        }}
+        Plotly.restyle(graphDiv, update, [ti]);
+      }}
+    }}
+
+    btnTheme.addEventListener('click', function() {{
+      var next = currentTheme() === 'dark' ? 'light' : 'dark';
+      document.documentElement.setAttribute('data-theme', next);
+      btnTheme.textContent = themes[next].icon;
+      applyPlotlyTheme(next);
+    }});
+
+    /* ═══════════════ 搜索逻辑 ═══════════════ */
+
     function parseQueries(raw) {{
       return raw.split('/').map(function(s) {{ return s.trim().toUpperCase(); }})
                 .filter(function(s) {{ return s.length > 0; }});
     }}
 
-    /* ── 判断某个队名是否匹配任一关键词 ── */
     function isMatch(name, queries) {{
       for (var q = 0; q < queries.length; q++) {{
         if (name.indexOf(queries[q]) !== -1) return true;
@@ -603,12 +731,11 @@ def generate_interactive_html(df: pd.DataFrame) -> None:
       return false;
     }}
 
-    /* ── 搜索 & 高亮 ── */
     function highlightTeam() {{
       var queries = parseQueries(input.value);
       if (!queries.length || !graphDiv || !graphDiv.data) return;
 
-      var matchedNames = {{}};  // 去重记录
+      var matchedNames = {{}};
 
       var nTraces = graphDiv.data.length;
       for (var ti = 0; ti < nTraces; ti++) {{
@@ -628,7 +755,7 @@ def generate_interactive_html(df: pd.DataFrame) -> None:
             matchedNames[tname] = true;
           }} else {{
             widths[i]    = 0.5;
-            colors[i]    = 'rgba(255,255,255,0.15)';
+            colors[i]    = currentTheme() === 'dark' ? 'rgba(255,255,255,0.15)' : 'rgba(0,0,0,0.1)';
             opacities[i] = 0.35;
           }}
         }}
@@ -640,7 +767,6 @@ def generate_interactive_html(df: pd.DataFrame) -> None:
         }}, [ti]);
       }}
 
-      // 从预嵌入的 TEAM_DATA 查找信息
       var matchedRows = [];
       var keys = Object.keys(matchedNames);
       for (var k = 0; k < keys.length; k++) {{
@@ -650,7 +776,6 @@ def generate_interactive_html(df: pd.DataFrame) -> None:
       renderInfoTable(matchedRows);
     }}
 
-    /* ── 渲染搜索结果表格 ── */
     function renderInfoTable(rows) {{
       if (!rows.length) {{
         infoPanel.innerHTML = '';
@@ -658,12 +783,12 @@ def generate_interactive_html(df: pd.DataFrame) -> None:
       }}
       rows.sort(function(a, b) {{ return (b.elo || 0) - (a.elo || 0); }});
       var html = '<table><thead><tr>'
-        + '<th>Team</th><th>Elo</th><th>SoS</th><th>Driver Skills</th><th>Prog Skills</th>'
+        + '<th>Team</th><th>Elo</th><th>SoS</th><th>Driver Skills</th><th>Programming Skills</th>'
         + '</tr></thead><tbody>';
       for (var i = 0; i < rows.length; i++) {{
         var r = rows[i];
         html += '<tr>'
-          + '<td style="font-weight:600;color:#58a6ff">' + r.team + '</td>'
+          + '<td style="font-weight:600;color:var(--text-link)">' + r.team + '</td>'
           + '<td>' + r.elo.toFixed(1) + '</td>'
           + '<td>' + r.sos.toFixed(4) + '</td>'
           + '<td>' + r.driver + '</td>'
@@ -674,9 +799,9 @@ def generate_interactive_html(df: pd.DataFrame) -> None:
       infoPanel.innerHTML = html;
     }}
 
-    /* ── 清除高亮 & 表格 ── */
     function clearHighlight() {{
       if (!graphDiv || !graphDiv.data) return;
+      var isDark = currentTheme() === 'dark';
       var nTraces = graphDiv.data.length;
       for (var ti = 0; ti < nTraces; ti++) {{
         var trace = graphDiv.data[ti];
@@ -686,7 +811,9 @@ def generate_interactive_html(df: pd.DataFrame) -> None:
         var opacities = new Array(n);
         for (var i = 0; i < n; i++) {{
           widths[i]    = 0.5;
-          colors[i]    = ti === 0 ? 'rgba(255,255,255,0.25)' : 'rgba(255,255,255,0.1)';
+          colors[i]    = ti === 0
+            ? (isDark ? 'rgba(255,255,255,0.25)' : 'rgba(0,0,0,0.15)')
+            : (isDark ? 'rgba(255,255,255,0.1)'  : 'rgba(0,0,0,0.08)');
           opacities[i] = ti === 0 ? 0.82 : 0.7;
         }}
         Plotly.restyle(graphDiv, {{
