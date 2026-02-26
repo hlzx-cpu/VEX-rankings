@@ -8,3 +8,9 @@ __pycache__/
 
 # ── 数据缓存（可选，若不想提交生成数据） ──
 dashboard_data.csv
+
+# ── 开发文档 / 素材（不在仓库中展示） ──
+image.png
+ui.md
+user.md
+prompt.md

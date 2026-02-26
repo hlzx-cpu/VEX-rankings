@@ -252,7 +252,7 @@ def render_chart(records, selected_teams):
                 "<b>%{text}</b><br>"
                 "SoS: %{x:.4f}<br>"
                 "Elo: %{y:.1f}<br>"
-                "Skills: 无数据"
+                "Skills: N/A"
                 "<extra></extra>"
             ),
             name="无 Skills 数据",
