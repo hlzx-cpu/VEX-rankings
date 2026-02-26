@@ -1,52 +1,60 @@
 <!DOCTYPE html>
 <html lang="en" data-theme="dark">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>VURC 2025-2026 Rankings</title>
   <style>
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
 
     /* ── CSS 变量：暗色主题（默认） ── */
-    :root, [data-theme="dark"] {
-      --bg-body:      #0d1117;
-      --bg-toolbar:   #161b22;
-      --bg-input:     #0d1117;
-      --border:       #30363d;
-      --text:         #c9d1d9;
+    :root,
+    [data-theme="dark"] {
+      --bg-body: #0d1117;
+      --bg-toolbar: #161b22;
+      --bg-input: #0d1117;
+      --border: #30363d;
+      --text: #c9d1d9;
       --text-heading: #e6edf3;
-      --text-dim:     #8b949e;
-      --text-link:    #58a6ff;
-      --bg-table-th:  #21262d;
+      --text-dim: #8b949e;
+      --text-link: #58a6ff;
+      --bg-table-th: #21262d;
       --bg-table-hover: #1c2128;
       --border-table: #21262d;
-      --plot-paper:   #0d1117;
-      --plot-bg:      #161b22;
-      --plot-grid:    #21262d;
-      --btn-sec-bg:   #21262d;
-      --btn-sec-hover:#30363d;
-      --toggle-icon:  '☀️';
+      --plot-paper: #0d1117;
+      --plot-bg: #161b22;
+      --plot-grid: #21262d;
+      --btn-sec-bg: #21262d;
+      --btn-sec-hover: #30363d;
+      --toggle-icon: '☀️';
     }
 
     /* ── CSS 变量：浅色主题 ── */
     [data-theme="light"] {
-      --bg-body:      #ffffff;
-      --bg-toolbar:   #f6f8fa;
-      --bg-input:     #ffffff;
-      --border:       #d0d7de;
-      --text:         #1f2328;
+      --bg-body: #ffffff;
+      --bg-toolbar: #f6f8fa;
+      --bg-input: #ffffff;
+      --border: #d0d7de;
+      --text: #1f2328;
       --text-heading: #1f2328;
-      --text-dim:     #656d76;
-      --text-link:    #0969da;
-      --bg-table-th:  #f6f8fa;
+      --text-dim: #656d76;
+      --text-link: #0969da;
+      --bg-table-th: #f6f8fa;
       --bg-table-hover: #f0f3f6;
       --border-table: #d8dee4;
-      --plot-paper:   #ffffff;
-      --plot-bg:      #f6f8fa;
-      --plot-grid:    #d0d7de;
-      --btn-sec-bg:   #f3f4f6;
-      --btn-sec-hover:#e5e7eb;
-      --toggle-icon:  '🌙';
+      --plot-paper: #ffffff;
+      --plot-bg: #f6f8fa;
+      --plot-grid: #d0d7de;
+      --btn-sec-bg: #f3f4f6;
+      --btn-sec-hover: #e5e7eb;
+      --toggle-icon: '🌙';
     }
 
     body {
@@ -56,6 +64,7 @@
       min-height: 100vh;
       transition: background 0.25s, color 0.25s;
     }
+
     .toolbar {
       display: flex;
       align-items: center;
@@ -66,6 +75,7 @@
       flex-wrap: wrap;
       transition: background 0.25s;
     }
+
     .toolbar h1 {
       font-size: 18px;
       font-weight: 600;
@@ -73,6 +83,7 @@
       margin-right: auto;
       white-space: nowrap;
     }
+
     .toolbar input[type="text"] {
       background: var(--bg-input);
       border: 1px solid var(--border);
@@ -84,12 +95,15 @@
       outline: none;
       transition: border-color 0.2s, background 0.25s, color 0.25s;
     }
+
     .toolbar input[type="text"]:focus {
       border-color: var(--text-link);
     }
+
     .toolbar input[type="text"]::placeholder {
       color: var(--text-dim);
     }
+
     .btn {
       padding: 6px 16px;
       font-size: 13px;
@@ -99,17 +113,26 @@
       cursor: pointer;
       transition: background 0.15s, border-color 0.15s, color 0.15s;
     }
+
     .btn-primary {
       background: #238636;
       color: #ffffff;
       border-color: #238636;
     }
-    .btn-primary:hover { background: #2ea043; }
+
+    .btn-primary:hover {
+      background: #2ea043;
+    }
+
     .btn-secondary {
       background: var(--btn-sec-bg);
       color: var(--text);
     }
-    .btn-secondary:hover { background: var(--btn-sec-hover); }
+
+    .btn-secondary:hover {
+      background: var(--btn-sec-hover);
+    }
+
     .btn-toggle {
       background: var(--btn-sec-bg);
       color: var(--text);
@@ -117,15 +140,24 @@
       padding: 5px 12px;
       line-height: 1;
     }
-    .btn-toggle:hover { background: var(--btn-sec-hover); }
+
+    .btn-toggle:hover {
+      background: var(--btn-sec-hover);
+    }
+
     #chart-container {
       padding: 8px 16px;
     }
+
     /* ── 搜索结果信息表格 ── */
     #info-panel {
       padding: 0 24px 12px 24px;
     }
-    #info-panel:empty { display: none; }
+
+    #info-panel:empty {
+      display: none;
+    }
+
     #info-panel table {
       border-collapse: collapse;
       width: auto;
@@ -133,6 +165,7 @@
       margin-top: 8px;
       font-size: 13px;
     }
+
     #info-panel th {
       background: var(--bg-table-th);
       color: var(--text-heading);
@@ -142,17 +175,20 @@
       font-weight: 600;
       white-space: nowrap;
     }
+
     #info-panel td {
       padding: 5px 14px;
       border-bottom: 1px solid var(--border-table);
       color: var(--text);
       white-space: nowrap;
     }
+
     #info-panel tr:hover td {
       background: var(--bg-table-hover);
     }
   </style>
 </head>
+
 <body>
   <div class="toolbar">
     <h1>VURC 2025-2026 Rankings</h1>
@@ -163,208 +199,215 @@
   </div>
   <div id="info-panel"></div>
   <div id="chart-container">
-    <div>                        <script type="text/javascript">window.PlotlyConfig = {MathJaxConfig: 'local'};</script>
-        <script charset="utf-8" src="https://cdn.plot.ly/plotly-3.1.0.min.js" integrity="sha256-Ei4740bWZhaUTQuD6q9yQlgVCMPBz6CZWhevDYPv93A=" crossorigin="anonymous"></script>                <div id="vurc-plot" class="plotly-graph-div" style="height:800px; width:100%;"></div>            <script type="text/javascript">                window.PLOTLYENV=window.PLOTLYENV || {};                                if (document.getElementById("vurc-plot")) {                    Plotly.newPlot(                        "vurc-plot",                        [{"customdata":{"dtype":"i2","bdata":"TAABAFoAOwAlAB4APgAnAGoAUgAkAAgAUAAnADgAHQA4AB4AOAAjABgABgBaADAAaQAeAGMAJQBCAB4AOAAeAIQAYwBmAEIAGQAUADIADQBRADoAYgBTAIAAJQBqAC0ALwAKAHcAWgBIACcAXQAsAFwANgA0ABwAeQBaAEQAHgAQAA8AWwARAFwALAB1ADkAcQBFAEQAIwAnAB4AWQAsAFsALAAuABQAPAAUAE8AKAAlACMAAAAVAFcAKgBFAB8AXgBtAF0ASQA4ACMAXAAiADcACgAtAAgAPgARADYAGgAaAAEAHQABAC8ADAAuAAkALAAFABYADwBeAEYATwA2ACYAAgAqAAsAIwAJACoADwA+ACAAKAABADAALQArAB8AcAAyAHQANQA\u002fADAAXABJAGsAVQBYAEYAVwBMACcAEAAoAA8ALwARACwACgApAAYAOgAeAA8AHgBHACMAJQAeADsACwAfAB4ANQAgACkAHgAiAA8AJwAaAEcAHgBVACMARABCAB4AHgBvAC4AVQATAEwAGQApAAwAPQAeAFUASgBYADoAIgAeAFEAHgBSADsALQARACIAHgB4AGoAeAAfAEEAPwBjAC0ASAACAEkAEwBQADYAdwA2AHAAVgBiADsAMAAWADIAHgAcAB4AJwAPADgAIwBmAB4AVgApAIYAeAAeAB4AVwAMAEAAIABAAB4ALgAjAIYAWwBsACsAWQAeACoAHgBaAB4AOQAdADkADAArAB8AHwAPAB4AEgB2AEYAQwAbAE4AFQAyAB4AOwAGAC0AAgAoAAgALgAUAEkAGgA9ABQAJAALABoABQAkAAEALgAFADAAHgAUAAEAJAADAD0AHQAyAAsAdQBgAB4AHgBhAF8AQgAnAG4AIgA=","shape":"167, 2"},"hovertemplate":"\u003cb\u003e%{text}\u003c\u002fb\u003e\u003cbr\u003eSoS: %{x:.4f}\u003cbr\u003eElo: %{y:.1f}\u003cbr\u003eDriver: %{customdata[0]}\u003cbr\u003eProgramming: %{customdata[1]}\u003cextra\u003e\u003c\u002fextra\u003e","marker":{"color":{"dtype":"i2","bdata":"TABaACUAPgBqACQAUAA4ADgAOAAYAFoAaQBjAEIAOACEAGYAGQAyAFEAYgCAAGoALwB3AEgAXQBcADQAeQBEABAAWwBcAHUAcQBEACcAWQBbAC4APABPACUAAABXAEUAXgBdADgAXAA3AC0APgA2ABoAHQAvAC4ALAAWAF4ATwAmACoAIwAqAD4AKAAwACsAcAB0AD8AXABrAFgAVwAnACgALwAsACkAOgAPAEcAJQA7AB8ANQApACIAJwBHAFUARAAeAG8AVQBMACkAPQBVAFgAIgBRAFIALQAiAHgAeABBAGMASABJAFAAdwBwAGIAMAAyABwAJwA4AGYAVgCGAB4AVwBAAEAALgCGAGwAWQAqAFoAOQA5ACsAHwAeAHYAQwBOADIAOwAtACgALgBJAD0AJAAaACQALgAwABQAJAA9ADIAdQAeAGEAQgBuAA=="},"colorbar":{"len":0.75,"thickness":16,"tickfont":{"color":"#8b949e"},"tickvals":[0,20,40,60,80,100,120,140],"title":{"font":{"color":"#c9d1d9"},"side":"top","text":"driver_skills"},"x":1.01,"xanchor":"left","y":0.5,"yanchor":"middle"},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"line":{"color":"rgba(255,255,255,0.25)","width":0.5},"opacity":0.82,"showscale":true,"size":{"dtype":"f8","bdata":"AAAAAAAAAEDbnltFfrkuQI+lNtKt6CVAitNaweD6KEAk+NlwWxwyQM07f2aeoBZAitNaweD6KEDz2aikaIolQI+lNtKt6CVALcKT0RCqJ0AuIQkUjpgTQKpMWOh6titAj6U20q3oJUA53GOzv1QoQI+lNtKt6CVAj6U20q3oJUBnE\u002f7uVeYzQAy4NvaBPzBAqPSXm3fjIUDzWWFEK9gcQHDEnTmNdi5AKJwFwIo4MkA53GOzv1QoQPzuY2kz1SpAU1vaOlhMGUB+xCMsQvkyQIrTWsHg+ihANG\u002f9k3KIKkDGsQ0e1WQtQOr40ql\u002fKiVAfsQjLEL5MkCPpTbSreglQNpOT7He+x5AB+2vZg9+IEA0b\u002f2TcogqQFzPVswHMy5ACdCOzf2cMEAtwpPREKonQI+lNtKt6CVANG\u002f9k3KIKkA0b\u002f2TcogqQKj0l5t34yFAqPSXm3fjIUBTW9o6WEwpQC3Ck9EQqidAhR4VuY5UIkBkEiZKR+wpQMPBaAVkRSZAN\u002fnP2m\u002fhNECjFK6ohxYxQC3Ck9EQqidAoqOzDeVSJ0BTW9o6WEwZQM07f2aeoBZAB+2vZg9+IED2LxJfZWUkQAAAAAAAAABAAAAAAAAAAECqTFjoerYbQAAAAAAAABhAqPSXm3fjEUDaTk+x3vseQNuvrAezuzBAxrENHtVkLUDNO39mnqAGQDRv\u002fZNyiBpAAAAAAAAAGEDaTk+x3vseQM07f2aeoCZAAAAAAAAAAED87mNpM9UqQMPBaAVkRSZAwAofAMZILEDp+3Yg1R4tQKpMWOh6titAoxSuqIcWMUCaLpAhaHAyQNuvrAezuzBA+U1kNINvMUAAAAAAAAAgQNpOT7He+x5AB+2vZg9+IEBTW9o6WEwZQC4hCRSOmBNAj6U20q3oJUCPpTbSreglQC3Ck9EQqidAj6U20q3oJUA0b\u002f2TcogaQI+lNtKt6CVAzTt\u002fZp6gJkCPpTbSreglQNpOT7He+x5A9i8SX2VlJECPpTbSreglQC3Ck9EQqidADLg29oE\u002fMECPpTbSreglQCPQcBwbIStA+U1kNINvIUAAAAAAAAAkQKpMWOh6thtAj6U20q3oJUBOATf6YzQxQHDEnTmNdi5Aj6U20q3oJUCPpTbSreglQNueW0V+uS5AB+2vZg9+IECPpTbSreglQIiAdtVclzRAw8FoBWRFJkBfdbx+v78vQPzuY2kz1SpAzTt\u002fZp6gBkD5TWQ0g28hQMaxDR7VZC1AxrENHtVkLUA0eDO5F4wyQNueW0V+uS5Ap1ZUWfzCIkCPpTbSreglQI+lNtKt6CVA2k5Psd77HkAtwpPREKonQI+lNtKt6CVAAP+fmcycKUCPpTbSreg1QI+lNtKt6CVAqkxY6Hq2G0DNO39mnqAmQI+lNtKt6CVALcKT0RCqJ0CrKakwKxQzQGChHSrROipAj6U20q3oJUCPpTbSreglQI+lNtKt6CVA89mopGiKJUCqTFjoerYbQMPBaAVkRSZA2k5Psd77HkDZbN\u002fMdvggQNuvrAezuzBAgDlCLtzIJECFHhW5jlQiQI+lNtKt6CVALiEJFI6YE0DNO39mnqAGQM07f2aeoBZAqPSXm3fjIUD2LxJfZWUkQKj0l5t34yFANG\u002f9k3KIGkCo9Jebd+MRQAAAAAAAAABAqPSXm3fjEUCPpTbSreglQAAAAAAAAABAqkxY6Hq2C0Dz2aikaIolQDRv\u002fZNyiBpALiEJFI6YM0CPpTbSreglQKGVD9RbfjNAitNaweD6KECio7MN5VInQA=="}},"mode":"markers+text","name":"\u6709 Skills \u6570\u636e","text":["ABHA9","ARC","ARC3","AUBIE1","AUBIE2","AUK1","AUM1","AUM2","AURA","BBR1","BISON1","BLRS","BLRS2","BLZR1","BRYAN3","BUCKS","BUXU","CBU1","CCIT","CDM1","CLNKR","CODER2","CPSLO","CQU1","CSM","CSTU","CSUNB","CSUNR","CUMAE","CZTU","DKFNX","DUCKZ","ERAUG","ETAMU","EZ","EZPZ","GATR1","GATR2","GCUI","GSI","HAIL","HAUI1","HERD","HITSZ1","HITSZ7","HITWH1","HSKY","HUST1","HUST2","IKEN","ILLIN1","INTRT","ITCDJ1","ITESA1","ITESM1","ITMOR1","ITSMQ","ITSOA1","ITSOE1","ITSOE2","IUM1","IUM2","JACKS","JHAWK","JLU1","KAUTC1","KAUTC2","KGEAR","KRT2","KTECH1","KTECH2","KU1","KUDOS","LOUIE","LU","MEKEU1","MEKEU2","MEKEU3","MEKEU4","MINES","MJ5","MSOE","MTSAC1","NEUST1","NJIT","NORM","OBR","OOPS","ORDGR","OWL1","PLATT1","PLATT2","POLI","POLY1","POTTR","PRVX","PSU1","PYRO","QCU1","QCU2","RCT1","RCXD1","RIT","ROHA1","ROHA8","SCA","SCAR","SCRT1","SEEDT1","SHU","SJTU1","SJTU2","SJTU3","SKERS","SMP1","SWU7","SYSTM","SZTU1","SZTU2","TCGMC2","TCMG1","TECHI","TECHI3","TECMI3","TJU2","TMAT1","TMAT3","TNTN","TRJNS","TVTCR1","UACH1","UCCR1","UCCR2","UCF","UCF7","UCSB1","UDVEX","UMN","UPFIM1","UPPAC1","UPPAC2","UPQR1","UPRM","UPSP1","UPT1","UPT5","UQU1","UTBAB1","UTBAB2","UTCHE1","UTCHS1","UTCJ1","UTCJ2","UTEC1","UTEC2","UTMOR1","UTMR1","UTSH1","UTTT1","UTVAM1","UTVMZ1","VCAT","WPI","WVUR1","WVUTE1","XJTU1","ZIPS"],"textfont":{"color":"#c9d1d9","size":9},"textposition":"top center","x":{"dtype":"f8","bdata":"+THmriXk3z\u002fBOSNKe4PjP7WmeccpOuQ\u002fXwfOGVHa4z8dyeU\u002fpN\u002fiP2iR7Xw\u002fNd4\u002fAwmKH2Pu4D+Ens2qz9XgP18pyxDHuuA\u002fdQKaCBue3j+YTBWMSuriP36MuWsJ+eI\u002f4umVsgxx4j8Z4lgXt9HiP1dbsb\u002fsnuQ\u002fCRueXinL4j9xrIvbaADfPxsv3SQGgd0\u002f5BQdyeU\u002f5D+KH2PuWkLgP74wmSoYleY\u002fj1N0JJf\u002f3D8pXI\u002fC9SjiP\u002fs6cM6I0uQ\u002fP1dbsb\u002fs2j8pyxDHurjhP8KGp1fKMuA\u002fb4EExY8x4T\u002fecYqO5PLjP7ivA+eMKOE\u002f5x2n6Egu5T9I4XoUrkflPylcj8L1KOI\u002faCJseHql4D+JQWDl0CLhP13+Q\u002frt6+Q\u002f1QloImx44j9Ra5p3nKLlP7Pqc7UV+98\u002fGeJYF7fR4D\u002f+Q\u002frt68DhP+QUHcnlP+A\u002fqmBUUieg4T+Rfvs6cM7iP+2ePCzUmuI\u002fObTIdr6f4j+TGARWDi3kPy7\u002fIf32deA\u002fyjLEsS5u3z8Spb3BFybfP4ts5\u002fup8eI\u002fAJF++zpw4j+3Yn\u002fZPXngP2WqYFRSJ+I\u002fKxiV1Alo4D+k374OnDPgP6kT0ETY8OI\u002fb4EExY8x1z9\u002f+zpwzojeP1mGONbFbdw\u002fE\u002fJBz2bV3z+wA+eMKO3ZP9CzWfW52uA\u002fcayL22gA4T9X7C+7Jw\u002fhP8X+snvysOA\u002fAJF++zpw4D+C4seYu5bgP3npJjEIrOA\u002fBcWPMXct3T9TBaOSOgHhP2x4eqUsQ9w\u002fE\u002fJBz2bV4z9Ra5p3nKLhPy7\u002fIf32ddw\u002fjLlrCfmg3z\u002fufD81XrrdP95xio7k8t8\u002fbVZ9rrZi3z\u002f7XG3F\u002frLjP4zbaABvgeA\u002f3bWEfNCz4z\u002f35GGh1jThP1mGONbFbeA\u002fjnVxGw3g4T+EDU+vlGXgP0Jg5dAi29k\u002fQs9m1edq4z8Wak3zjlPgP0tZhjjWxeE\u002f4XoUrkfh4D9FR3L5D+nlPxsN4C2QoOA\u002fvsEXJlMF5T+oV8oyxLHiP5qZmZmZmek\u002f3gIJih9j3j99rrZif9nZP+viNhrAW9w\u002f0gDeAgmK3z+si9toAG\u002fdP2IQWDm0yN4\u002fMCqpE9BE6D8OLbKd76feP5kqGJXUCeA\u002fMzMzMzMz0z8dyeU\u002fpN\u002fiP+XQItv5fuI\u002fiIVa07zj4j9Ei2zn+6njP9\u002fgC5OpguE\u002forQ3+MJk4j+Ens2qz9XeP\u002fVKWYY41t0\u002fN4lBYOXQ4j9xPQrXo3DhP0Ck374OnOM\u002fqRPQRNjw4D\u002fu68A5I0rfPwdfmEwVjOA\u002flkOLbOf74T\u002fwp8ZLN4njP9Xnaiv2l+M\u002fJJf\u002fkH774D8cfGEyVTDgPzJVMCqpE+I\u002f2V92Tx4W4j\u002fjNhrAWyDdP8E5I0p7g+E\u002fqFfKMsSx4D\u002fwhclUwajiP0tZhjjWxdk\u002fTtGRXP5D4D8AkX77OnDiPx+F61G4HuE\u002fjErqBDQR5D9TBaOSOgHhP7Hh6ZWyDOE\u002fzH9Iv30d4D9SSZ2AJsLiPyDSb18HzuE\u002f78nDQq1p4j8tIR\u002f0bFbZPyh+jLlrCeM\u002fR3L5D+m33z\u002fgnBGlvcHfP1mGONbFbeA\u002fxLEubqMB4D+GONbFbTTiP\u002f5l9+RhoeI\u002fexSuR+F64D8xmSoYldThP4qw4emVsuI\u002f1zTvOEVH4D+3Yn\u002fZPXncP1uxv+yePOA\u002fcF8HzhlR4D+4HoXrUbjgPwfwFkhQ\u002fOA\u002fwhcmUwWj2j8X2c73U+PdP1HaG3xhMuE\u002fcRsN4C2Q4j8FNBE2PL3eP2UZ4lgXt+E\u002fBcWPMXct3T8UP8bctYTkPw=="},"y":{"dtype":"f8","bdata":"exSuR+Eol0DhehSuR02aQOxRuB6F45NA7FG4HoXpmEDXo3A9CgSbQHsUrkfhNpdA9ihcj8JimUCkcD0K166XQNejcD0KpZdAPQrXo3BMlkBcj8L1KBCWQDMzMzMzp5lA9ihcj8L2mkCuR+F6FKyYQClcj8L125VAMzMzMzOQl0Bcj8L1KFaYQJqZmZmZzZlACtejcD3YlkAK16NwPSCXQOF6FK5HxZZAPQrXo3Cpl0B7FK5H4XGcQDMzMzMzCJpAUrgehes8mkApXI\u002fC9bGaQClcj8L1CJlAXI\u002fC9Sj2mECuR+F6FBqYQOF6FK5HY5dAZmZmZmZtmkAAAAAAAIiXQFK4HoXr\u002fZVA4XoUrkcomEAK16NwPTicQFK4HoXrcJhAMzMzMzNDmUCF61G4Hr6VQEjhehSuiZdAUrgehestm0AfhetRuOiYQD0K16NwsZZAexSuR+ECmEDhehSuR\u002faXQKRwPQrX0pVAhetRuB4\u002flkBSuB6F65aXQIXrUbgeRJhAKVyPwvUnmEDsUbgehS+XQLgehetRHpZASOF6FK5Fl0CuR+F6FLKZQOF6FK5Hs5ZAFK5H4XrHmEAUrkfhejuZQMP1KFyPYJVAPQrXo3Bel0CamZmZmTSYQLgehetR1ZdAmpmZmZnTl0AUrkfhesyWQIXrUbgep5hA4XoUrkcNl0AUrkfhepmWQEjhehSuB5hAFK5H4XrIl0DNzMzMzBSWQJqZmZmZCZdAuB6F61F\u002flkBSuB6F6+WXQHE9CtejF5hAmpmZmZlYmkAfhetRuPabQKRwPQrX55ZAPQrXo3Cql0BSuB6F6yqYQFyPwvUoO5dAw\u002fUoXI9ll0D2KFyPwk+WQMP1KFyPiZVAmpmZmZk0l0BmZmZmZlOXQB+F61G4C5dAj8L1KFxhl0DD9Shcj46VQM3MzMzMk5lAZmZmZmb0lUBI4XoUrqOWQM3MzMzM3pVASOF6FK6Gl0B7FK5H4UaXQMP1KFyPupdAUrgehet2l0A9CtejcFGXQMP1KFyPtJhAj8L1KFy\u002fl0DhehSuR+KYQBSuR+F6s5lASOF6FK4WmEDNzMzMzFyYQLgehetRTJdAKVyPwvVtmEDD9ShcjzSXQI\u002fC9Shc\u002fJZAhetRuB5FmEBSuB6F642YQOxRuB6FPZhA9ihcj8LVlEAzMzMzMziWQKRwPQrX2JpAzczMzMwRmUDNzMzMzI6XQAAAAAAA4ZpAj8L1KFxOmUAK16NwPXyXQFK4HoXrbZdA7FG4HoXXl0CamZmZmRKYQD0K16NwT5xAexSuR+HTl0B7FK5H4fOVQIXrUbge+pZAFK5H4Xpal0AAAAAAABKXQKRwPQrXa5pAcT0K16MEl0DD9Shcj4iZQBSuR+F6W5ZAmpmZmZkKmUDXo3A9CpyZQEjhehSuUplAXI\u002fC9SjUlkCF61G4Hv+eQLgehetRiplAAAAAAACImEAUrkfhegWYQI\u002fC9Shc1phAcT0K16MlmEB7FK5H4R+WQOF6FK5HXZhA16NwPQpIlkBmZmZmZveYQI\u002fC9Shc1ZpAPQrXo3Dsl0D2KFyPwryZQOxRuB6Fg5ZAH4XrUbiKl0DsUbgehTiYQDMzMzMz2ZRAPQrXo3D9l0A9CtejcI6XQHsUrkfhhJdACtejcD0ll0BxPQrXoymWQHsUrkfhTpZAhetRuB7ElkD2KFyPwoaVQMP1KFyPGZZAKVyPwvUil0AzMzMzM9KZQGZmZmZmgphAhetRuB6xmUBcj8L1KJyVQI\u002fC9Shc\u002fplAH4XrUbi6l0BSuB6F606YQA=="},"type":"scatter"},{"hovertemplate":"\u003cb\u003e%{text}\u003c\u002fb\u003e\u003cbr\u003eSoS: %{x:.4f}\u003cbr\u003eElo: %{y:.1f}\u003cbr\u003eSkills: \u65e0\u6570\u636e\u003cextra\u003e\u003c\u002fextra\u003e","marker":{"color":"#484f58","line":{"color":"rgba(255,255,255,0.1)","width":0.5},"opacity":0.7,"size":3,"symbol":"circle"},"mode":"markers+text","name":"\u65e0 Skills \u6570\u636e","showlegend":false,"text":["AASU1","ACU1","AOU5","ARC2","AUGDC4","AUK2","AUTRC1","AUU1","BAD","BARG9","BPCU","BRYAN1","BRYAN2","BTG1","BU","BULL","BV1","BYTE1","CAP1","CCKAO","CPPRC1","CSN1","CYBER","DTC1","EMORY7","EMP","EMU5","FOUR4","FSU","FVT","GUARD","GUST1","HA7","HAM7","HAS5","HDU1","HEK3","IABC1","IEST1","ILLIN2","INADE1","ITSHU","KBS3","KCST1","KING","KKU1","KL","KRT1","KSUR1","MAJMA1","MC","MC1","MCE","MCEC1","MED1","MTG7","MTSAC2","MTSAC3","NJUST","NJUST1","NJUST2","NJUST3","NYUSH1","PAAET1","PLATT3","PNTHR","PNU1","PPA","PSAU","QCT2","QUEEN","RCXD2","RCXD3","ROSE","SMP2","SNNUW","TECMI1","TECMI4","TIGRS","TJU","TROBE","UAT1","UCR1","UMBC","UPCH1","UPE1","UQU2","USST1","UTALT1","UTALT2","UTARA1","UTCHH1","UTHU1","UTMY1","UTMZ1","UTPRR1","UTRMT","VTCRO","WCOE","WCRC","WLDCT","XJTU2"],"textfont":{"color":"#8b949e","size":9},"textposition":"top center","x":{"dtype":"f8","bdata":"4JwRpb3B3z\u002fHKTqSy3\u002fcPyGwcmiR7dw\u002fBFYOLbKd5z9MpgpGJXXiP4qO5PIf0t8\u002f5dAi2\u002fl+4j+DwMqhRbbfP0Mc6+I2GuI\u002feqUsQxzr4D+si9toAG\u002fhP\u002fCnxks3ieE\u002fgLdAguLH5D8gY+5aQj7gPyPb+X5qvOQ\u002forQ3+MJk5j93LSEf9GzmP8BbIEHxY+A\u002fV+wvuycP3z82PL1SliHgPxiV1AloItw\u002fB1+YTBWM3j9aZDvfT43jP2HD0ytlGeA\u002ff9k9eVio4T+uR+F6FK7hP4hjXdxGA+A\u002fRGlv8IXJ4D8DCYofY+7kPzY8vVKWId4\u002fJQaBlUOL4D+e76fGSzfdP4QNT6+UZeA\u002f845TdCSX4T+X\u002f5B++zrgPycxCKwcWuI\u002fdy0hH\u002fRs3j+Rfvs6cM7iP+XQItv5fto\u002futqK\u002fWX34D\u002ff4AuTqYLjPzEIrBxaZN8\u002f+THmriXk4T\u002fTvOMUHcndP6jGSzeJQeY\u002fsp3vp8ZL2z9XW7G\u002f7J7iP8xdS8gHPd8\u002fU5YhjnVx3z+tad5xio7gP1tCPujZrN4\u002fJ8KGp1fK3j+R7Xw\u002fNV7eP9lfdk8eFuI\u002fa5p3nKIj3T+jI7n8h\u002fTfP8Dsnjws1OI\u002fLSEf9GxW4z\u002fImLuWkA\u002fgP0hQ\u002fBhz194\u002fg1FJnYAm4D+WsgxxrIvhPyL99nXgnOM\u002fkxgEVg4t4D\u002fi6ZWyDHHkP2iR7Xw\u002fNeg\u002f845TdCSX2z89CtejcD3iP5jdk4eFWt8\u002foyO5\u002fIf03z+WsgxxrIvXP18HzhlR2t8\u002f9P3UeOkm4T8CK4cW2c7fP0tZhjjWxdk\u002fVTAqqRPQ4D\u002fD0ytlGeLiPyntDb4wmeA\u002fdQKaCBue5D\u002feAgmKH2PiP9v5fmq8dOE\u002f30+Nl24S3z88vVKWIY7dP\u002fjCZKpgVOA\u002fS+oENBE24D+fzarP1VbiP+XQItv5ft4\u002fJJf\u002fkH774j9PQBNhw9PjP1g5tMh2vuE\u002fTmIQWDm04D8xCKwcWmTjP2ZmZmZmZt4\u002f78nDQq1p3j\u002fpt68D54zgPwWjkjoBTeI\u002ftRX7y+7J2z8gY+5aQj7cP\u002fRsVn2utuA\u002fy6FFtvP94j9Ei2zn+6nhP7U3+MJkquQ\u002f"},"y":{"dtype":"f8","bdata":"Urgehevtl0BI4XoUrgGWQAAAAAAA65ZAzczMzMy8lECkcD0K13uXQArXo3A9hpZArkfhehT0lUAAAAAAAEKXQD0K16NwVJpAhetRuB5WlkBSuB6F6wiXQDMzMzMzM5ZAAAAAAAD6lkAUrkfhehuXQD0K16NwNJZAH4XrUbhJlkC4HoXrUWCVQPYoXI\u002fCoJVAH4XrUbizlkDD9Shcj6CYQB+F61G42pVAFK5H4Xq6l0D2KFyPwh6WQDMzMzMzTJhAMzMzMzMElUD2KFyPwuCVQIXrUbgeYZZAUrgehev3lUDsUbgehTCWQOF6FK5HhJdAZmZmZmanlkDXo3A9CgSWQOxRuB6Fn5ZAXI\u002fC9ShVlkB7FK5H4bGZQOF6FK5HJ5ZAH4XrUbisl0AzMzMzM9KVQNejcD0KGplAcT0K16NKl0BSuB6F62CWQI\u002fC9ShcKJdA7FG4HoXGlUDNzMzMzKmXQNejcD0KepdA4XoUrkfQlUCamZmZmUOWQM3MzMzMwJZAuB6F61FulkA9CtejcASYQOxRuB6FM5dAKVyPwvWhl0CkcD0K1zuXQClcj8L1iZNAH4XrUbh0mEBxPQrXo6+WQAAAAAAAn5VAj8L1KFy7lEDNzMzMzGeWQFK4HoXrMpZAFK5H4XoOl0BxPQrXo9yVQHE9Ctej8pRAcT0K16OJlkDhehSuR2SVQFK4HoXreJdAuB6F61GclkAUrkfhemSWQD0K16Nw+JVAexSuR+HplUDNzMzMzGqXQBSuR+F67pRAMzMzMzOtlEBSuB6F65WYQDMzMzMzhJVA9ihcj8KRlkCuR+F6FKCVQJqZmZmZOphAFK5H4Xrzl0BxPQrXoy+WQI\u002fC9ShcD5dAhetRuB5Wl0D2KFyPwkiVQNejcD0KSZdAuB6F61GvlUApXI\u002fC9TCVQJqZmZmZK5dApHA9CtcvlkDhehSuR96VQArXo3A9apVAPQrXo3CQlUCF61G4HsCWQMP1KFyP+5ZAUrgehetllkAAAAAAAHOWQFK4HoXrupVAFK5H4XpXlUB7FK5H4YaVQKRwPQrXnJVAAAAAAADElUBxPQrXo+OXQB+F61G4p5ZA"},"type":"scatter"}],                        {"template":{"data":{"histogram2dcontour":[{"type":"histogram2dcontour","colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]]}],"choropleth":[{"type":"choropleth","colorbar":{"outlinewidth":0,"ticks":""}}],"histogram2d":[{"type":"histogram2d","colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]]}],"heatmap":[{"type":"heatmap","colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]]}],"contourcarpet":[{"type":"contourcarpet","colorbar":{"outlinewidth":0,"ticks":""}}],"contour":[{"type":"contour","colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]]}],"surface":[{"type":"surface","colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]]}],"mesh3d":[{"type":"mesh3d","colorbar":{"outlinewidth":0,"ticks":""}}],"scatter":[{"fillpattern":{"fillmode":"overlay","size":10,"solidity":0.2},"type":"scatter"}],"parcoords":[{"type":"parcoords","line":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"scatterpolargl":[{"type":"scatterpolargl","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"bar":[{"error_x":{"color":"#2a3f5f"},"error_y":{"color":"#2a3f5f"},"marker":{"line":{"color":"#E5ECF6","width":0.5},"pattern":{"fillmode":"overlay","size":10,"solidity":0.2}},"type":"bar"}],"scattergeo":[{"type":"scattergeo","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"scatterpolar":[{"type":"scatterpolar","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"histogram":[{"marker":{"pattern":{"fillmode":"overlay","size":10,"solidity":0.2}},"type":"histogram"}],"scattergl":[{"type":"scattergl","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"scatter3d":[{"type":"scatter3d","line":{"colorbar":{"outlinewidth":0,"ticks":""}},"marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"scattermap":[{"type":"scattermap","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"scattermapbox":[{"type":"scattermapbox","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"scatterternary":[{"type":"scatterternary","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"scattercarpet":[{"type":"scattercarpet","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"carpet":[{"aaxis":{"endlinecolor":"#2a3f5f","gridcolor":"white","linecolor":"white","minorgridcolor":"white","startlinecolor":"#2a3f5f"},"baxis":{"endlinecolor":"#2a3f5f","gridcolor":"white","linecolor":"white","minorgridcolor":"white","startlinecolor":"#2a3f5f"},"type":"carpet"}],"table":[{"cells":{"fill":{"color":"#EBF0F8"},"line":{"color":"white"}},"header":{"fill":{"color":"#C8D4E3"},"line":{"color":"white"}},"type":"table"}],"barpolar":[{"marker":{"line":{"color":"#E5ECF6","width":0.5},"pattern":{"fillmode":"overlay","size":10,"solidity":0.2}},"type":"barpolar"}],"pie":[{"automargin":true,"type":"pie"}]},"layout":{"autotypenumbers":"strict","colorway":["#636efa","#EF553B","#00cc96","#ab63fa","#FFA15A","#19d3f3","#FF6692","#B6E880","#FF97FF","#FECB52"],"font":{"color":"#2a3f5f"},"hovermode":"closest","hoverlabel":{"align":"left"},"paper_bgcolor":"white","plot_bgcolor":"#E5ECF6","polar":{"bgcolor":"#E5ECF6","angularaxis":{"gridcolor":"white","linecolor":"white","ticks":""},"radialaxis":{"gridcolor":"white","linecolor":"white","ticks":""}},"ternary":{"bgcolor":"#E5ECF6","aaxis":{"gridcolor":"white","linecolor":"white","ticks":""},"baxis":{"gridcolor":"white","linecolor":"white","ticks":""},"caxis":{"gridcolor":"white","linecolor":"white","ticks":""}},"coloraxis":{"colorbar":{"outlinewidth":0,"ticks":""}},"colorscale":{"sequential":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"sequentialminus":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"diverging":[[0,"#8e0152"],[0.1,"#c51b7d"],[0.2,"#de77ae"],[0.3,"#f1b6da"],[0.4,"#fde0ef"],[0.5,"#f7f7f7"],[0.6,"#e6f5d0"],[0.7,"#b8e186"],[0.8,"#7fbc41"],[0.9,"#4d9221"],[1,"#276419"]]},"xaxis":{"gridcolor":"white","linecolor":"white","ticks":"","title":{"standoff":15},"zerolinecolor":"white","automargin":true,"zerolinewidth":2},"yaxis":{"gridcolor":"white","linecolor":"white","ticks":"","title":{"standoff":15},"zerolinecolor":"white","automargin":true,"zerolinewidth":2},"scene":{"xaxis":{"backgroundcolor":"#E5ECF6","gridcolor":"white","linecolor":"white","showbackground":true,"ticks":"","zerolinecolor":"white","gridwidth":2},"yaxis":{"backgroundcolor":"#E5ECF6","gridcolor":"white","linecolor":"white","showbackground":true,"ticks":"","zerolinecolor":"white","gridwidth":2},"zaxis":{"backgroundcolor":"#E5ECF6","gridcolor":"white","linecolor":"white","showbackground":true,"ticks":"","zerolinecolor":"white","gridwidth":2}},"shapedefaults":{"line":{"color":"#2a3f5f"}},"annotationdefaults":{"arrowcolor":"#2a3f5f","arrowhead":0,"arrowwidth":1},"geo":{"bgcolor":"white","landcolor":"#E5ECF6","subunitcolor":"white","showland":true,"showlakes":true,"lakecolor":"white"},"title":{"x":0.05},"mapbox":{"style":"light"}}},"xaxis":{"title":{"font":{"color":"#c9d1d9"},"text":"strength_of_schedule"},"tickfont":{"color":"#8b949e"},"range":[0.28,0.82],"dtick":0.05,"showgrid":true,"gridcolor":"#21262d","gridwidth":1,"zeroline":false,"showline":false,"tickformat":".2f"},"yaxis":{"title":{"font":{"color":"#c9d1d9"},"text":"elo"},"tickfont":{"color":"#8b949e"},"range":[1213.8255,2020.4445],"dtick":50,"showgrid":true,"gridcolor":"#21262d","gridwidth":1,"zeroline":false,"showline":false},"title":{"font":{"size":13,"color":"#e6edf3"},"text":"Elo vs Strength of Schedule, Skills Scores (Driver = Color, Programming = Size) ---VURC--- 2025-2026","x":0,"xanchor":"left"},"margin":{"l":60,"r":130,"t":55,"b":55},"font":{"family":"'Segoe UI', Arial, sans-serif","color":"#c9d1d9"},"paper_bgcolor":"#0d1117","plot_bgcolor":"#161b22","height":800,"showlegend":false},                        {"responsive": true}                    )                };            </script>        </div>
+    <div>
+      <script type="text/javascript">window.PlotlyConfig = { MathJaxConfig: 'local' };</script>
+      <script charset="utf-8" src="https://cdn.plot.ly/plotly-3.1.0.min.js"
+        integrity="sha256-Ei4740bWZhaUTQuD6q9yQlgVCMPBz6CZWhevDYPv93A=" crossorigin="anonymous"></script>
+      <div id="vurc-plot" class="plotly-graph-div" style="height:800px; width:100%;"></div>
+      <script
+        type="text/javascript">                window.PLOTLYENV = window.PLOTLYENV || {}; if (document.getElementById("vurc-plot")) { Plotly.newPlot("vurc-plot", [{ "customdata": { "dtype": "i2", "bdata": "TAABAFoAOwAlAB4APgAnAGoAUgAkAAgAUAAnADgAHQA4AB4AOAAjABgABgBaADAAaQAeAGMAJQBCAB4AOAAeAIQAYwBmAEIAGQAUADIADQBRADoAYgBTAIAAJQBqAC0ALwAKAHcAWgBIACcAXQAsAFwANgA0ABwAeQBaAEQAHgAQAA8AWwARAFwALAB1ADkAcQBFAEQAIwAnAB4AWQAsAFsALAAuABQAPAAUAE8AKAAlACMAAAAVAFcAKgBFAB8AXgBtAF0ASQA4ACMAXAAiADcACgAtAAgAPgARADYAGgAaAAEAHQABAC8ADAAuAAkALAAFABYADwBeAEYATwA2ACYAAgAqAAsAIwAJACoADwA+ACAAKAABADAALQArAB8AcAAyAHQANQA\u002fADAAXABJAGsAVQBYAEYAVwBMACcAEAAoAA8ALwARACwACgApAAYAOgAeAA8AHgBHACMAJQAeADsACwAfAB4ANQAgACkAHgAiAA8AJwAaAEcAHgBVACMARABCAB4AHgBvAC4AVQATAEwAGQApAAwAPQAeAFUASgBYADoAIgAeAFEAHgBSADsALQARACIAHgB4AGoAeAAfAEEAPwBjAC0ASAACAEkAEwBQADYAdwA2AHAAVgBiADsAMAAWADIAHgAcAB4AJwAPADgAIwBmAB4AVgApAIYAeAAeAB4AVwAMAEAAIABAAB4ALgAjAIYAWwBsACsAWQAeACoAHgBaAB4AOQAdADkADAArAB8AHwAPAB4AEgB2AEYAQwAbAE4AFQAyAB4AOwAGAC0AAgAoAAgALgAUAEkAGgA9ABQAJAALABoABQAkAAEALgAFADAAHgAUAAEAJAADAD0AHQAyAAsAdQBgAB4AHgBhAF8AQgAnAG4AIgA=", "shape": "167, 2" }, "hovertemplate": "\u003cb\u003e%{text}\u003c\u002fb\u003e\u003cbr\u003eSoS: %{x:.4f}\u003cbr\u003eElo: %{y:.1f}\u003cbr\u003eDriver: %{customdata[0]}\u003cbr\u003eProgramming: %{customdata[1]}\u003cextra\u003e\u003c\u002fextra\u003e", "marker": { "color": { "dtype": "i2", "bdata": "TABaACUAPgBqACQAUAA4ADgAOAAYAFoAaQBjAEIAOACEAGYAGQAyAFEAYgCAAGoALwB3AEgAXQBcADQAeQBEABAAWwBcAHUAcQBEACcAWQBbAC4APABPACUAAABXAEUAXgBdADgAXAA3AC0APgA2ABoAHQAvAC4ALAAWAF4ATwAmACoAIwAqAD4AKAAwACsAcAB0AD8AXABrAFgAVwAnACgALwAsACkAOgAPAEcAJQA7AB8ANQApACIAJwBHAFUARAAeAG8AVQBMACkAPQBVAFgAIgBRAFIALQAiAHgAeABBAGMASABJAFAAdwBwAGIAMAAyABwAJwA4AGYAVgCGAB4AVwBAAEAALgCGAGwAWQAqAFoAOQA5ACsAHwAeAHYAQwBOADIAOwAtACgALgBJAD0AJAAaACQALgAwABQAJAA9ADIAdQAeAGEAQgBuAA==" }, "colorbar": { "len": 0.75, "thickness": 16, "tickfont": { "color": "#8b949e" }, "tickvals": [0, 20, 40, 60, 80, 100, 120, 140], "title": { "font": { "color": "#c9d1d9" }, "side": "top", "text": "driver_skills" }, "x": 1.01, "xanchor": "left", "y": 0.5, "yanchor": "middle" }, "colorscale": [[0.0, "#0d0887"], [0.1111111111111111, "#46039f"], [0.2222222222222222, "#7201a8"], [0.3333333333333333, "#9c179e"], [0.4444444444444444, "#bd3786"], [0.5555555555555556, "#d8576b"], [0.6666666666666666, "#ed7953"], [0.7777777777777778, "#fb9f3a"], [0.8888888888888888, "#fdca26"], [1.0, "#f0f921"]], "line": { "color": "rgba(255,255,255,0.25)", "width": 0.5 }, "opacity": 0.82, "showscale": true, "size": { "dtype": "f8", "bdata": "AAAAAAAAAEDbnltFfrkuQI+lNtKt6CVAitNaweD6KEAk+NlwWxwyQM07f2aeoBZAitNaweD6KEDz2aikaIolQI+lNtKt6CVALcKT0RCqJ0AuIQkUjpgTQKpMWOh6titAj6U20q3oJUA53GOzv1QoQI+lNtKt6CVAj6U20q3oJUBnE\u002f7uVeYzQAy4NvaBPzBAqPSXm3fjIUDzWWFEK9gcQHDEnTmNdi5AKJwFwIo4MkA53GOzv1QoQPzuY2kz1SpAU1vaOlhMGUB+xCMsQvkyQIrTWsHg+ihANG\u002f9k3KIKkDGsQ0e1WQtQOr40ql\u002fKiVAfsQjLEL5MkCPpTbSreglQNpOT7He+x5AB+2vZg9+IEA0b\u002f2TcogqQFzPVswHMy5ACdCOzf2cMEAtwpPREKonQI+lNtKt6CVANG\u002f9k3KIKkA0b\u002f2TcogqQKj0l5t34yFAqPSXm3fjIUBTW9o6WEwpQC3Ck9EQqidAhR4VuY5UIkBkEiZKR+wpQMPBaAVkRSZAN\u002fnP2m\u002fhNECjFK6ohxYxQC3Ck9EQqidAoqOzDeVSJ0BTW9o6WEwZQM07f2aeoBZAB+2vZg9+IED2LxJfZWUkQAAAAAAAAABAAAAAAAAAAECqTFjoerYbQAAAAAAAABhAqPSXm3fjEUDaTk+x3vseQNuvrAezuzBAxrENHtVkLUDNO39mnqAGQDRv\u002fZNyiBpAAAAAAAAAGEDaTk+x3vseQM07f2aeoCZAAAAAAAAAAED87mNpM9UqQMPBaAVkRSZAwAofAMZILEDp+3Yg1R4tQKpMWOh6titAoxSuqIcWMUCaLpAhaHAyQNuvrAezuzBA+U1kNINvMUAAAAAAAAAgQNpOT7He+x5AB+2vZg9+IEBTW9o6WEwZQC4hCRSOmBNAj6U20q3oJUCPpTbSreglQC3Ck9EQqidAj6U20q3oJUA0b\u002f2TcogaQI+lNtKt6CVAzTt\u002fZp6gJkCPpTbSreglQNpOT7He+x5A9i8SX2VlJECPpTbSreglQC3Ck9EQqidADLg29oE\u002fMECPpTbSreglQCPQcBwbIStA+U1kNINvIUAAAAAAAAAkQKpMWOh6thtAj6U20q3oJUBOATf6YzQxQHDEnTmNdi5Aj6U20q3oJUCPpTbSreglQNueW0V+uS5AB+2vZg9+IECPpTbSreglQIiAdtVclzRAw8FoBWRFJkBfdbx+v78vQPzuY2kz1SpAzTt\u002fZp6gBkD5TWQ0g28hQMaxDR7VZC1AxrENHtVkLUA0eDO5F4wyQNueW0V+uS5Ap1ZUWfzCIkCPpTbSreglQI+lNtKt6CVA2k5Psd77HkAtwpPREKonQI+lNtKt6CVAAP+fmcycKUCPpTbSreg1QI+lNtKt6CVAqkxY6Hq2G0DNO39mnqAmQI+lNtKt6CVALcKT0RCqJ0CrKakwKxQzQGChHSrROipAj6U20q3oJUCPpTbSreglQI+lNtKt6CVA89mopGiKJUCqTFjoerYbQMPBaAVkRSZA2k5Psd77HkDZbN\u002fMdvggQNuvrAezuzBAgDlCLtzIJECFHhW5jlQiQI+lNtKt6CVALiEJFI6YE0DNO39mnqAGQM07f2aeoBZAqPSXm3fjIUD2LxJfZWUkQKj0l5t34yFANG\u002f9k3KIGkCo9Jebd+MRQAAAAAAAAABAqPSXm3fjEUCPpTbSreglQAAAAAAAAABAqkxY6Hq2C0Dz2aikaIolQDRv\u002fZNyiBpALiEJFI6YM0CPpTbSreglQKGVD9RbfjNAitNaweD6KECio7MN5VInQA==" } }, "mode": "markers+text", "name": "\u6709 Skills \u6570\u636e", "text": ["ABHA9", "ARC", "ARC3", "AUBIE1", "AUBIE2", "AUK1", "AUM1", "AUM2", "AURA", "BBR1", "BISON1", "BLRS", "BLRS2", "BLZR1", "BRYAN3", "BUCKS", "BUXU", "CBU1", "CCIT", "CDM1", "CLNKR", "CODER2", "CPSLO", "CQU1", "CSM", "CSTU", "CSUNB", "CSUNR", "CUMAE", "CZTU", "DKFNX", "DUCKZ", "ERAUG", "ETAMU", "EZ", "EZPZ", "GATR1", "GATR2", "GCUI", "GSI", "HAIL", "HAUI1", "HERD", "HITSZ1", "HITSZ7", "HITWH1", "HSKY", "HUST1", "HUST2", "IKEN", "ILLIN1", "INTRT", "ITCDJ1", "ITESA1", "ITESM1", "ITMOR1", "ITSMQ", "ITSOA1", "ITSOE1", "ITSOE2", "IUM1", "IUM2", "JACKS", "JHAWK", "JLU1", "KAUTC1", "KAUTC2", "KGEAR", "KRT2", "KTECH1", "KTECH2", "KU1", "KUDOS", "LOUIE", "LU", "MEKEU1", "MEKEU2", "MEKEU3", "MEKEU4", "MINES", "MJ5", "MSOE", "MTSAC1", "NEUST1", "NJIT", "NORM", "OBR", "OOPS", "ORDGR", "OWL1", "PLATT1", "PLATT2", "POLI", "POLY1", "POTTR", "PRVX", "PSU1", "PYRO", "QCU1", "QCU2", "RCT1", "RCXD1", "RIT", "ROHA1", "ROHA8", "SCA", "SCAR", "SCRT1", "SEEDT1", "SHU", "SJTU1", "SJTU2", "SJTU3", "SKERS", "SMP1", "SWU7", "SYSTM", "SZTU1", "SZTU2", "TCGMC2", "TCMG1", "TECHI", "TECHI3", "TECMI3", "TJU2", "TMAT1", "TMAT3", "TNTN", "TRJNS", "TVTCR1", "UACH1", "UCCR1", "UCCR2", "UCF", "UCF7", "UCSB1", "UDVEX", "UMN", "UPFIM1", "UPPAC1", "UPPAC2", "UPQR1", "UPRM", "UPSP1", "UPT1", "UPT5", "UQU1", "UTBAB1", "UTBAB2", "UTCHE1", "UTCHS1", "UTCJ1", "UTCJ2", "UTEC1", "UTEC2", "UTMOR1", "UTMR1", "UTSH1", "UTTT1", "UTVAM1", "UTVMZ1", "VCAT", "WPI", "WVUR1", "WVUTE1", "XJTU1", "ZIPS"], "textfont": { "color": "#c9d1d9", "size": 9 }, "textposition": "top center", "x": { "dtype": "f8", "bdata": "+THmriXk3z\u002fBOSNKe4PjP7WmeccpOuQ\u002fXwfOGVHa4z8dyeU\u002fpN\u002fiP2iR7Xw\u002fNd4\u002fAwmKH2Pu4D+Ens2qz9XgP18pyxDHuuA\u002fdQKaCBue3j+YTBWMSuriP36MuWsJ+eI\u002f4umVsgxx4j8Z4lgXt9HiP1dbsb\u002fsnuQ\u002fCRueXinL4j9xrIvbaADfPxsv3SQGgd0\u002f5BQdyeU\u002f5D+KH2PuWkLgP74wmSoYleY\u002fj1N0JJf\u002f3D8pXI\u002fC9SjiP\u002fs6cM6I0uQ\u002fP1dbsb\u002fs2j8pyxDHurjhP8KGp1fKMuA\u002fb4EExY8x4T\u002fecYqO5PLjP7ivA+eMKOE\u002f5x2n6Egu5T9I4XoUrkflPylcj8L1KOI\u002faCJseHql4D+JQWDl0CLhP13+Q\u002frt6+Q\u002f1QloImx44j9Ra5p3nKLlP7Pqc7UV+98\u002fGeJYF7fR4D\u002f+Q\u002frt68DhP+QUHcnlP+A\u002fqmBUUieg4T+Rfvs6cM7iP+2ePCzUmuI\u002fObTIdr6f4j+TGARWDi3kPy7\u002fIf32deA\u002fyjLEsS5u3z8Spb3BFybfP4ts5\u002fup8eI\u002fAJF++zpw4j+3Yn\u002fZPXngP2WqYFRSJ+I\u002fKxiV1Alo4D+k374OnDPgP6kT0ETY8OI\u002fb4EExY8x1z9\u002f+zpwzojeP1mGONbFbdw\u002fE\u002fJBz2bV3z+wA+eMKO3ZP9CzWfW52uA\u002fcayL22gA4T9X7C+7Jw\u002fhP8X+snvysOA\u002fAJF++zpw4D+C4seYu5bgP3npJjEIrOA\u002fBcWPMXct3T9TBaOSOgHhP2x4eqUsQ9w\u002fE\u002fJBz2bV4z9Ra5p3nKLhPy7\u002fIf32ddw\u002fjLlrCfmg3z\u002fufD81XrrdP95xio7k8t8\u002fbVZ9rrZi3z\u002f7XG3F\u002frLjP4zbaABvgeA\u002f3bWEfNCz4z\u002f35GGh1jThP1mGONbFbeA\u002fjnVxGw3g4T+EDU+vlGXgP0Jg5dAi29k\u002fQs9m1edq4z8Wak3zjlPgP0tZhjjWxeE\u002f4XoUrkfh4D9FR3L5D+nlPxsN4C2QoOA\u002fvsEXJlMF5T+oV8oyxLHiP5qZmZmZmek\u002f3gIJih9j3j99rrZif9nZP+viNhrAW9w\u002f0gDeAgmK3z+si9toAG\u002fdP2IQWDm0yN4\u002fMCqpE9BE6D8OLbKd76feP5kqGJXUCeA\u002fMzMzMzMz0z8dyeU\u002fpN\u002fiP+XQItv5fuI\u002fiIVa07zj4j9Ei2zn+6njP9\u002fgC5OpguE\u002forQ3+MJk4j+Ens2qz9XeP\u002fVKWYY41t0\u002fN4lBYOXQ4j9xPQrXo3DhP0Ck374OnOM\u002fqRPQRNjw4D\u002fu68A5I0rfPwdfmEwVjOA\u002flkOLbOf74T\u002fwp8ZLN4njP9Xnaiv2l+M\u002fJJf\u002fkH774D8cfGEyVTDgPzJVMCqpE+I\u002f2V92Tx4W4j\u002fjNhrAWyDdP8E5I0p7g+E\u002fqFfKMsSx4D\u002fwhclUwajiP0tZhjjWxdk\u002fTtGRXP5D4D8AkX77OnDiPx+F61G4HuE\u002fjErqBDQR5D9TBaOSOgHhP7Hh6ZWyDOE\u002fzH9Iv30d4D9SSZ2AJsLiPyDSb18HzuE\u002f78nDQq1p4j8tIR\u002f0bFbZPyh+jLlrCeM\u002fR3L5D+m33z\u002fgnBGlvcHfP1mGONbFbeA\u002fxLEubqMB4D+GONbFbTTiP\u002f5l9+RhoeI\u002fexSuR+F64D8xmSoYldThP4qw4emVsuI\u002f1zTvOEVH4D+3Yn\u002fZPXncP1uxv+yePOA\u002fcF8HzhlR4D+4HoXrUbjgPwfwFkhQ\u002fOA\u002fwhcmUwWj2j8X2c73U+PdP1HaG3xhMuE\u002fcRsN4C2Q4j8FNBE2PL3eP2UZ4lgXt+E\u002fBcWPMXct3T8UP8bctYTkPw==" }, "y": { "dtype": "f8", "bdata": "exSuR+Eol0DhehSuR02aQOxRuB6F45NA7FG4HoXpmEDXo3A9CgSbQHsUrkfhNpdA9ihcj8JimUCkcD0K166XQNejcD0KpZdAPQrXo3BMlkBcj8L1KBCWQDMzMzMzp5lA9ihcj8L2mkCuR+F6FKyYQClcj8L125VAMzMzMzOQl0Bcj8L1KFaYQJqZmZmZzZlACtejcD3YlkAK16NwPSCXQOF6FK5HxZZAPQrXo3Cpl0B7FK5H4XGcQDMzMzMzCJpAUrgehes8mkApXI\u002fC9bGaQClcj8L1CJlAXI\u002fC9Sj2mECuR+F6FBqYQOF6FK5HY5dAZmZmZmZtmkAAAAAAAIiXQFK4HoXr\u002fZVA4XoUrkcomEAK16NwPTicQFK4HoXrcJhAMzMzMzNDmUCF61G4Hr6VQEjhehSuiZdAUrgehestm0AfhetRuOiYQD0K16NwsZZAexSuR+ECmEDhehSuR\u002faXQKRwPQrX0pVAhetRuB4\u002flkBSuB6F65aXQIXrUbgeRJhAKVyPwvUnmEDsUbgehS+XQLgehetRHpZASOF6FK5Fl0CuR+F6FLKZQOF6FK5Hs5ZAFK5H4XrHmEAUrkfhejuZQMP1KFyPYJVAPQrXo3Bel0CamZmZmTSYQLgehetR1ZdAmpmZmZnTl0AUrkfhesyWQIXrUbgep5hA4XoUrkcNl0AUrkfhepmWQEjhehSuB5hAFK5H4XrIl0DNzMzMzBSWQJqZmZmZCZdAuB6F61F\u002flkBSuB6F6+WXQHE9CtejF5hAmpmZmZlYmkAfhetRuPabQKRwPQrX55ZAPQrXo3Cql0BSuB6F6yqYQFyPwvUoO5dAw\u002fUoXI9ll0D2KFyPwk+WQMP1KFyPiZVAmpmZmZk0l0BmZmZmZlOXQB+F61G4C5dAj8L1KFxhl0DD9Shcj46VQM3MzMzMk5lAZmZmZmb0lUBI4XoUrqOWQM3MzMzM3pVASOF6FK6Gl0B7FK5H4UaXQMP1KFyPupdAUrgehet2l0A9CtejcFGXQMP1KFyPtJhAj8L1KFy\u002fl0DhehSuR+KYQBSuR+F6s5lASOF6FK4WmEDNzMzMzFyYQLgehetRTJdAKVyPwvVtmEDD9ShcjzSXQI\u002fC9Shc\u002fJZAhetRuB5FmEBSuB6F642YQOxRuB6FPZhA9ihcj8LVlEAzMzMzMziWQKRwPQrX2JpAzczMzMwRmUDNzMzMzI6XQAAAAAAA4ZpAj8L1KFxOmUAK16NwPXyXQFK4HoXrbZdA7FG4HoXXl0CamZmZmRKYQD0K16NwT5xAexSuR+HTl0B7FK5H4fOVQIXrUbge+pZAFK5H4Xpal0AAAAAAABKXQKRwPQrXa5pAcT0K16MEl0DD9Shcj4iZQBSuR+F6W5ZAmpmZmZkKmUDXo3A9CpyZQEjhehSuUplAXI\u002fC9SjUlkCF61G4Hv+eQLgehetRiplAAAAAAACImEAUrkfhegWYQI\u002fC9Shc1phAcT0K16MlmEB7FK5H4R+WQOF6FK5HXZhA16NwPQpIlkBmZmZmZveYQI\u002fC9Shc1ZpAPQrXo3Dsl0D2KFyPwryZQOxRuB6Fg5ZAH4XrUbiKl0DsUbgehTiYQDMzMzMz2ZRAPQrXo3D9l0A9CtejcI6XQHsUrkfhhJdACtejcD0ll0BxPQrXoymWQHsUrkfhTpZAhetRuB7ElkD2KFyPwoaVQMP1KFyPGZZAKVyPwvUil0AzMzMzM9KZQGZmZmZmgphAhetRuB6xmUBcj8L1KJyVQI\u002fC9Shc\u002fplAH4XrUbi6l0BSuB6F606YQA==" }, "type": "scatter" }, { "hovertemplate": "\u003cb\u003e%{text}\u003c\u002fb\u003e\u003cbr\u003eSoS: %{x:.4f}\u003cbr\u003eElo: %{y:.1f}\u003cbr\u003eSkills: \u65e0\u6570\u636e\u003cextra\u003e\u003c\u002fextra\u003e", "marker": { "color": "#484f58", "line": { "color": "rgba(255,255,255,0.1)", "width": 0.5 }, "opacity": 0.7, "size": 3, "symbol": "circle" }, "mode": "markers+text", "name": "\u65e0 Skills \u6570\u636e", "showlegend": false, "text": ["AASU1", "ACU1", "AOU5", "ARC2", "AUGDC4", "AUK2", "AUTRC1", "AUU1", "BAD", "BARG9", "BPCU", "BRYAN1", "BRYAN2", "BTG1", "BU", "BULL", "BV1", "BYTE1", "CAP1", "CCKAO", "CPPRC1", "CSN1", "CYBER", "DTC1", "EMORY7", "EMP", "EMU5", "FOUR4", "FSU", "FVT", "GUARD", "GUST1", "HA7", "HAM7", "HAS5", "HDU1", "HEK3", "IABC1", "IEST1", "ILLIN2", "INADE1", "ITSHU", "KBS3", "KCST1", "KING", "KKU1", "KL", "KRT1", "KSUR1", "MAJMA1", "MC", "MC1", "MCE", "MCEC1", "MED1", "MTG7", "MTSAC2", "MTSAC3", "NJUST", "NJUST1", "NJUST2", "NJUST3", "NYUSH1", "PAAET1", "PLATT3", "PNTHR", "PNU1", "PPA", "PSAU", "QCT2", "QUEEN", "RCXD2", "RCXD3", "ROSE", "SMP2", "SNNUW", "TECMI1", "TECMI4", "TIGRS", "TJU", "TROBE", "UAT1", "UCR1", "UMBC", "UPCH1", "UPE1", "UQU2", "USST1", "UTALT1", "UTALT2", "UTARA1", "UTCHH1", "UTHU1", "UTMY1", "UTMZ1", "UTPRR1", "UTRMT", "VTCRO", "WCOE", "WCRC", "WLDCT", "XJTU2"], "textfont": { "color": "#8b949e", "size": 9 }, "textposition": "top center", "x": { "dtype": "f8", "bdata": "4JwRpb3B3z\u002fHKTqSy3\u002fcPyGwcmiR7dw\u002fBFYOLbKd5z9MpgpGJXXiP4qO5PIf0t8\u002f5dAi2\u002fl+4j+DwMqhRbbfP0Mc6+I2GuI\u002feqUsQxzr4D+si9toAG\u002fhP\u002fCnxks3ieE\u002fgLdAguLH5D8gY+5aQj7gPyPb+X5qvOQ\u002forQ3+MJk5j93LSEf9GzmP8BbIEHxY+A\u002fV+wvuycP3z82PL1SliHgPxiV1AloItw\u002fB1+YTBWM3j9aZDvfT43jP2HD0ytlGeA\u002ff9k9eVio4T+uR+F6FK7hP4hjXdxGA+A\u002fRGlv8IXJ4D8DCYofY+7kPzY8vVKWId4\u002fJQaBlUOL4D+e76fGSzfdP4QNT6+UZeA\u002f845TdCSX4T+X\u002f5B++zrgPycxCKwcWuI\u002fdy0hH\u002fRs3j+Rfvs6cM7iP+XQItv5fto\u002futqK\u002fWX34D\u002ff4AuTqYLjPzEIrBxaZN8\u002f+THmriXk4T\u002fTvOMUHcndP6jGSzeJQeY\u002fsp3vp8ZL2z9XW7G\u002f7J7iP8xdS8gHPd8\u002fU5YhjnVx3z+tad5xio7gP1tCPujZrN4\u002fJ8KGp1fK3j+R7Xw\u002fNV7eP9lfdk8eFuI\u002fa5p3nKIj3T+jI7n8h\u002fTfP8Dsnjws1OI\u002fLSEf9GxW4z\u002fImLuWkA\u002fgP0hQ\u002fBhz194\u002fg1FJnYAm4D+WsgxxrIvhPyL99nXgnOM\u002fkxgEVg4t4D\u002fi6ZWyDHHkP2iR7Xw\u002fNeg\u002f845TdCSX2z89CtejcD3iP5jdk4eFWt8\u002foyO5\u002fIf03z+WsgxxrIvXP18HzhlR2t8\u002f9P3UeOkm4T8CK4cW2c7fP0tZhjjWxdk\u002fVTAqqRPQ4D\u002fD0ytlGeLiPyntDb4wmeA\u002fdQKaCBue5D\u002feAgmKH2PiP9v5fmq8dOE\u002f30+Nl24S3z88vVKWIY7dP\u002fjCZKpgVOA\u002fS+oENBE24D+fzarP1VbiP+XQItv5ft4\u002fJJf\u002fkH774j9PQBNhw9PjP1g5tMh2vuE\u002fTmIQWDm04D8xCKwcWmTjP2ZmZmZmZt4\u002f78nDQq1p3j\u002fpt68D54zgPwWjkjoBTeI\u002ftRX7y+7J2z8gY+5aQj7cP\u002fRsVn2utuA\u002fy6FFtvP94j9Ei2zn+6nhP7U3+MJkquQ\u002f" }, "y": { "dtype": "f8", "bdata": "Urgehevtl0BI4XoUrgGWQAAAAAAA65ZAzczMzMy8lECkcD0K13uXQArXo3A9hpZArkfhehT0lUAAAAAAAEKXQD0K16NwVJpAhetRuB5WlkBSuB6F6wiXQDMzMzMzM5ZAAAAAAAD6lkAUrkfhehuXQD0K16NwNJZAH4XrUbhJlkC4HoXrUWCVQPYoXI\u002fCoJVAH4XrUbizlkDD9Shcj6CYQB+F61G42pVAFK5H4Xq6l0D2KFyPwh6WQDMzMzMzTJhAMzMzMzMElUD2KFyPwuCVQIXrUbgeYZZAUrgehev3lUDsUbgehTCWQOF6FK5HhJdAZmZmZmanlkDXo3A9CgSWQOxRuB6Fn5ZAXI\u002fC9ShVlkB7FK5H4bGZQOF6FK5HJ5ZAH4XrUbisl0AzMzMzM9KVQNejcD0KGplAcT0K16NKl0BSuB6F62CWQI\u002fC9ShcKJdA7FG4HoXGlUDNzMzMzKmXQNejcD0KepdA4XoUrkfQlUCamZmZmUOWQM3MzMzMwJZAuB6F61FulkA9CtejcASYQOxRuB6FM5dAKVyPwvWhl0CkcD0K1zuXQClcj8L1iZNAH4XrUbh0mEBxPQrXo6+WQAAAAAAAn5VAj8L1KFy7lEDNzMzMzGeWQFK4HoXrMpZAFK5H4XoOl0BxPQrXo9yVQHE9Ctej8pRAcT0K16OJlkDhehSuR2SVQFK4HoXreJdAuB6F61GclkAUrkfhemSWQD0K16Nw+JVAexSuR+HplUDNzMzMzGqXQBSuR+F67pRAMzMzMzOtlEBSuB6F65WYQDMzMzMzhJVA9ihcj8KRlkCuR+F6FKCVQJqZmZmZOphAFK5H4Xrzl0BxPQrXoy+WQI\u002fC9ShcD5dAhetRuB5Wl0D2KFyPwkiVQNejcD0KSZdAuB6F61GvlUApXI\u002fC9TCVQJqZmZmZK5dApHA9CtcvlkDhehSuR96VQArXo3A9apVAPQrXo3CQlUCF61G4HsCWQMP1KFyP+5ZAUrgehetllkAAAAAAAHOWQFK4HoXrupVAFK5H4XpXlUB7FK5H4YaVQKRwPQrXnJVAAAAAAADElUBxPQrXo+OXQB+F61G4p5ZA" }, "type": "scatter" }], { "template": { "data": { "histogram2dcontour": [{ "type": "histogram2dcontour", "colorbar": { "outlinewidth": 0, "ticks": "" }, "colorscale": [[0.0, "#0d0887"], [0.1111111111111111, "#46039f"], [0.2222222222222222, "#7201a8"], [0.3333333333333333, "#9c179e"], [0.4444444444444444, "#bd3786"], [0.5555555555555556, "#d8576b"], [0.6666666666666666, "#ed7953"], [0.7777777777777778, "#fb9f3a"], [0.8888888888888888, "#fdca26"], [1.0, "#f0f921"]] }], "choropleth": [{ "type": "choropleth", "colorbar": { "outlinewidth": 0, "ticks": "" } }], "histogram2d": [{ "type": "histogram2d", "colorbar": { "outlinewidth": 0, "ticks": "" }, "colorscale": [[0.0, "#0d0887"], [0.1111111111111111, "#46039f"], [0.2222222222222222, "#7201a8"], [0.3333333333333333, "#9c179e"], [0.4444444444444444, "#bd3786"], [0.5555555555555556, "#d8576b"], [0.6666666666666666, "#ed7953"], [0.7777777777777778, "#fb9f3a"], [0.8888888888888888, "#fdca26"], [1.0, "#f0f921"]] }], "heatmap": [{ "type": "heatmap", "colorbar": { "outlinewidth": 0, "ticks": "" }, "colorscale": [[0.0, "#0d0887"], [0.1111111111111111, "#46039f"], [0.2222222222222222, "#7201a8"], [0.3333333333333333, "#9c179e"], [0.4444444444444444, "#bd3786"], [0.5555555555555556, "#d8576b"], [0.6666666666666666, "#ed7953"], [0.7777777777777778, "#fb9f3a"], [0.8888888888888888, "#fdca26"], [1.0, "#f0f921"]] }], "contourcarpet": [{ "type": "contourcarpet", "colorbar": { "outlinewidth": 0, "ticks": "" } }], "contour": [{ "type": "contour", "colorbar": { "outlinewidth": 0, "ticks": "" }, "colorscale": [[0.0, "#0d0887"], [0.1111111111111111, "#46039f"], [0.2222222222222222, "#7201a8"], [0.3333333333333333, "#9c179e"], [0.4444444444444444, "#bd3786"], [0.5555555555555556, "#d8576b"], [0.6666666666666666, "#ed7953"], [0.7777777777777778, "#fb9f3a"], [0.8888888888888888, "#fdca26"], [1.0, "#f0f921"]] }], "surface": [{ "type": "surface", "colorbar": { "outlinewidth": 0, "ticks": "" }, "colorscale": [[0.0, "#0d0887"], [0.1111111111111111, "#46039f"], [0.2222222222222222, "#7201a8"], [0.3333333333333333, "#9c179e"], [0.4444444444444444, "#bd3786"], [0.5555555555555556, "#d8576b"], [0.6666666666666666, "#ed7953"], [0.7777777777777778, "#fb9f3a"], [0.8888888888888888, "#fdca26"], [1.0, "#f0f921"]] }], "mesh3d": [{ "type": "mesh3d", "colorbar": { "outlinewidth": 0, "ticks": "" } }], "scatter": [{ "fillpattern": { "fillmode": "overlay", "size": 10, "solidity": 0.2 }, "type": "scatter" }], "parcoords": [{ "type": "parcoords", "line": { "colorbar": { "outlinewidth": 0, "ticks": "" } } }], "scatterpolargl": [{ "type": "scatterpolargl", "marker": { "colorbar": { "outlinewidth": 0, "ticks": "" } } }], "bar": [{ "error_x": { "color": "#2a3f5f" }, "error_y": { "color": "#2a3f5f" }, "marker": { "line": { "color": "#E5ECF6", "width": 0.5 }, "pattern": { "fillmode": "overlay", "size": 10, "solidity": 0.2 } }, "type": "bar" }], "scattergeo": [{ "type": "scattergeo", "marker": { "colorbar": { "outlinewidth": 0, "ticks": "" } } }], "scatterpolar": [{ "type": "scatterpolar", "marker": { "colorbar": { "outlinewidth": 0, "ticks": "" } } }], "histogram": [{ "marker": { "pattern": { "fillmode": "overlay", "size": 10, "solidity": 0.2 } }, "type": "histogram" }], "scattergl": [{ "type": "scattergl", "marker": { "colorbar": { "outlinewidth": 0, "ticks": "" } } }], "scatter3d": [{ "type": "scatter3d", "line": { "colorbar": { "outlinewidth": 0, "ticks": "" } }, "marker": { "colorbar": { "outlinewidth": 0, "ticks": "" } } }], "scattermap": [{ "type": "scattermap", "marker": { "colorbar": { "outlinewidth": 0, "ticks": "" } } }], "scattermapbox": [{ "type": "scattermapbox", "marker": { "colorbar": { "outlinewidth": 0, "ticks": "" } } }], "scatterternary": [{ "type": "scatterternary", "marker": { "colorbar": { "outlinewidth": 0, "ticks": "" } } }], "scattercarpet": [{ "type": "scattercarpet", "marker": { "colorbar": { "outlinewidth": 0, "ticks": "" } } }], "carpet": [{ "aaxis": { "endlinecolor": "#2a3f5f", "gridcolor": "white", "linecolor": "white", "minorgridcolor": "white", "startlinecolor": "#2a3f5f" }, "baxis": { "endlinecolor": "#2a3f5f", "gridcolor": "white", "linecolor": "white", "minorgridcolor": "white", "startlinecolor": "#2a3f5f" }, "type": "carpet" }], "table": [{ "cells": { "fill": { "color": "#EBF0F8" }, "line": { "color": "white" } }, "header": { "fill": { "color": "#C8D4E3" }, "line": { "color": "white" } }, "type": "table" }], "barpolar": [{ "marker": { "line": { "color": "#E5ECF6", "width": 0.5 }, "pattern": { "fillmode": "overlay", "size": 10, "solidity": 0.2 } }, "type": "barpolar" }], "pie": [{ "automargin": true, "type": "pie" }] }, "layout": { "autotypenumbers": "strict", "colorway": ["#636efa", "#EF553B", "#00cc96", "#ab63fa", "#FFA15A", "#19d3f3", "#FF6692", "#B6E880", "#FF97FF", "#FECB52"], "font": { "color": "#2a3f5f" }, "hovermode": "closest", "hoverlabel": { "align": "left" }, "paper_bgcolor": "white", "plot_bgcolor": "#E5ECF6", "polar": { "bgcolor": "#E5ECF6", "angularaxis": { "gridcolor": "white", "linecolor": "white", "ticks": "" }, "radialaxis": { "gridcolor": "white", "linecolor": "white", "ticks": "" } }, "ternary": { "bgcolor": "#E5ECF6", "aaxis": { "gridcolor": "white", "linecolor": "white", "ticks": "" }, "baxis": { "gridcolor": "white", "linecolor": "white", "ticks": "" }, "caxis": { "gridcolor": "white", "linecolor": "white", "ticks": "" } }, "coloraxis": { "colorbar": { "outlinewidth": 0, "ticks": "" } }, "colorscale": { "sequential": [[0.0, "#0d0887"], [0.1111111111111111, "#46039f"], [0.2222222222222222, "#7201a8"], [0.3333333333333333, "#9c179e"], [0.4444444444444444, "#bd3786"], [0.5555555555555556, "#d8576b"], [0.6666666666666666, "#ed7953"], [0.7777777777777778, "#fb9f3a"], [0.8888888888888888, "#fdca26"], [1.0, "#f0f921"]], "sequentialminus": [[0.0, "#0d0887"], [0.1111111111111111, "#46039f"], [0.2222222222222222, "#7201a8"], [0.3333333333333333, "#9c179e"], [0.4444444444444444, "#bd3786"], [0.5555555555555556, "#d8576b"], [0.6666666666666666, "#ed7953"], [0.7777777777777778, "#fb9f3a"], [0.8888888888888888, "#fdca26"], [1.0, "#f0f921"]], "diverging": [[0, "#8e0152"], [0.1, "#c51b7d"], [0.2, "#de77ae"], [0.3, "#f1b6da"], [0.4, "#fde0ef"], [0.5, "#f7f7f7"], [0.6, "#e6f5d0"], [0.7, "#b8e186"], [0.8, "#7fbc41"], [0.9, "#4d9221"], [1, "#276419"]] }, "xaxis": { "gridcolor": "white", "linecolor": "white", "ticks": "", "title": { "standoff": 15 }, "zerolinecolor": "white", "automargin": true, "zerolinewidth": 2 }, "yaxis": { "gridcolor": "white", "linecolor": "white", "ticks": "", "title": { "standoff": 15 }, "zerolinecolor": "white", "automargin": true, "zerolinewidth": 2 }, "scene": { "xaxis": { "backgroundcolor": "#E5ECF6", "gridcolor": "white", "linecolor": "white", "showbackground": true, "ticks": "", "zerolinecolor": "white", "gridwidth": 2 }, "yaxis": { "backgroundcolor": "#E5ECF6", "gridcolor": "white", "linecolor": "white", "showbackground": true, "ticks": "", "zerolinecolor": "white", "gridwidth": 2 }, "zaxis": { "backgroundcolor": "#E5ECF6", "gridcolor": "white", "linecolor": "white", "showbackground": true, "ticks": "", "zerolinecolor": "white", "gridwidth": 2 } }, "shapedefaults": { "line": { "color": "#2a3f5f" } }, "annotationdefaults": { "arrowcolor": "#2a3f5f", "arrowhead": 0, "arrowwidth": 1 }, "geo": { "bgcolor": "white", "landcolor": "#E5ECF6", "subunitcolor": "white", "showland": true, "showlakes": true, "lakecolor": "white" }, "title": { "x": 0.05 }, "mapbox": { "style": "light" } } }, "xaxis": { "title": { "font": { "color": "#c9d1d9" }, "text": "strength_of_schedule" }, "tickfont": { "color": "#8b949e" }, "range": [0.28, 0.82], "dtick": 0.05, "showgrid": true, "gridcolor": "#21262d", "gridwidth": 1, "zeroline": false, "showline": false, "tickformat": ".2f" }, "yaxis": { "title": { "font": { "color": "#c9d1d9" }, "text": "elo" }, "tickfont": { "color": "#8b949e" }, "range": [1213.8255, 2020.4445], "dtick": 50, "showgrid": true, "gridcolor": "#21262d", "gridwidth": 1, "zeroline": false, "showline": false }, "title": { "font": { "size": 13, "color": "#e6edf3" }, "text": "Elo vs Strength of Schedule, Skills Scores (Driver = Color, Programming = Size) ---VURC--- 2025-2026", "x": 0, "xanchor": "left" }, "margin": { "l": 60, "r": 130, "t": 55, "b": 55 }, "font": { "family": "'Segoe UI', Arial, sans-serif", "color": "#c9d1d9" }, "paper_bgcolor": "#0d1117", "plot_bgcolor": "#161b22", "height": 800, "showlegend": false }, { "responsive": true }) };            </script>
+    </div>
   </div>
 
   <script>
-  var TEAM_DATA = {"AASU1": {"team": "AASU1", "elo": 1531.5, "sos": 0.4962, "driver": 45, "prog": 0}, "ABHA9": {"team": "ABHA9", "elo": 1482.2, "sos": 0.4983, "driver": 76, "prog": 1}, "ACU1": {"team": "ACU1", "elo": 1408.4, "sos": 0.4453, "driver": 18, "prog": 0}, "AOU5": {"team": "AOU5", "elo": 1466.8, "sos": 0.452, "driver": 53, "prog": 0}, "ARC": {"team": "ARC", "elo": 1683.3, "sos": 0.6098, "driver": 90, "prog": 59}, "ARC2": {"team": "ARC2", "elo": 1327.2, "sos": 0.738, "driver": 0, "prog": 0}, "ARC3": {"team": "ARC3", "elo": 1272.9, "sos": 0.6321, "driver": 37, "prog": 30}, "AUBIE1": {"team": "AUBIE1", "elo": 1594.4, "sos": 0.6204, "driver": 62, "prog": 39}, "AUBIE2": {"team": "AUBIE2", "elo": 1729.0, "sos": 0.5898, "driver": 106, "prog": 82}, "AUGDC4": {"team": "AUGDC4", "elo": 1503.0, "sos": 0.5768, "driver": 0, "prog": 0}, "AUK1": {"team": "AUK1", "elo": 1485.7, "sos": 0.472, "driver": 36, "prog": 8}, "AUK2": {"team": "AUK2", "elo": 1441.6, "sos": 0.4972, "driver": 0, "prog": 0}, "AUM1": {"team": "AUM1", "elo": 1624.7, "sos": 0.5291, "driver": 80, "prog": 39}, "AUM2": {"team": "AUM2", "elo": 1515.7, "sos": 0.5261, "driver": 56, "prog": 29}, "AURA": {"team": "AURA", "elo": 1513.3, "sos": 0.5228, "driver": 56, "prog": 30}, "AUTRC1": {"team": "AUTRC1", "elo": 1405.0, "sos": 0.578, "driver": 11, "prog": 0}, "AUU1": {"team": "AUU1", "elo": 1488.5, "sos": 0.4955, "driver": 15, "prog": 0}, "BAD": {"team": "BAD", "elo": 1685.1, "sos": 0.5657, "driver": 0, "prog": 0}, "BARG9": {"team": "BARG9", "elo": 1429.5, "sos": 0.5287, "driver": 4, "prog": 0}, "BBR1": {"team": "BBR1", "elo": 1427.1, "sos": 0.4784, "driver": 56, "prog": 35}, "BISON1": {"team": "BISON1", "elo": 1412.0, "sos": 0.5911, "driver": 24, "prog": 6}, "BLRS": {"team": "BLRS", "elo": 1641.8, "sos": 0.5929, "driver": 90, "prog": 48}, "BLRS2": {"team": "BLRS2", "elo": 1725.7, "sos": 0.5763, "driver": 105, "prog": 30}, "BLZR1": {"team": "BLZR1", "elo": 1579.0, "sos": 0.5881, "driver": 99, "prog": 37}, "BPCU": {"team": "BPCU", "elo": 1474.2, "sos": 0.5448, "driver": 69, "prog": 0}, "BRYAN1": {"team": "BRYAN1", "elo": 1420.8, "sos": 0.548, "driver": 34, "prog": 0}, "BRYAN2": {"team": "BRYAN2", "elo": 1470.5, "sos": 0.6494, "driver": 46, "prog": 0}, "BRYAN3": {"team": "BRYAN3", "elo": 1399.0, "sos": 0.6444, "driver": 66, "prog": 30}, "BTG1": {"team": "BTG1", "elo": 1478.9, "sos": 0.5076, "driver": 25, "prog": 0}, "BU": {"team": "BU", "elo": 1421.1, "sos": 0.648, "driver": 19, "prog": 0}, "BUCKS": {"team": "BUCKS", "elo": 1508.0, "sos": 0.5873, "driver": 56, "prog": 30}, "BULL": {"team": "BULL", "elo": 1426.4, "sos": 0.6998, "driver": 29, "prog": 0}, "BUXU": {"team": "BUXU", "elo": 1557.5, "sos": 0.4844, "driver": 132, "prog": 99}, "BV1": {"team": "BV1", "elo": 1368.1, "sos": 0.7008, "driver": 0, "prog": 0}, "BYTE1": {"team": "BYTE1", "elo": 1384.2, "sos": 0.5122, "driver": 0, "prog": 0}, "CAP1": {"team": "CAP1", "elo": 1452.9, "sos": 0.4853, "driver": 0, "prog": 0}, "CBU1": {"team": "CBU1", "elo": 1651.4, "sos": 0.461, "driver": 102, "prog": 66}, "CCIT": {"team": "CCIT", "elo": 1462.1, "sos": 0.6328, "driver": 25, "prog": 20}, "CCKAO": {"team": "CCKAO", "elo": 1576.1, "sos": 0.5041, "driver": 0, "prog": 0}, "CDM1": {"team": "CDM1", "elo": 1480.1, "sos": 0.5081, "driver": 50, "prog": 13}, "CLNKR": {"team": "CLNKR", "elo": 1457.3, "sos": 0.7057, "driver": 81, "prog": 58}, "CODER2": {"team": "CODER2", "elo": 1514.4, "sos": 0.4531, "driver": 98, "prog": 83}, "CPPRC1": {"team": "CPPRC1", "elo": 1398.7, "sos": 0.4396, "driver": 13, "prog": 0}, "CPSLO": {"team": "CPSLO", "elo": 1820.5, "sos": 0.5675, "driver": 128, "prog": 37}, "CQU1": {"team": "CQU1", "elo": 1666.0, "sos": 0.6507, "driver": 106, "prog": 45}, "CSM": {"team": "CSM", "elo": 1679.2, "sos": 0.4207, "driver": 47, "prog": 10}, "CSN1": {"team": "CSN1", "elo": 1518.6, "sos": 0.4773, "driver": 43, "prog": 0}, "CSTU": {"team": "CSTU", "elo": 1708.5, "sos": 0.5538, "driver": 119, "prog": 90}, "CSUNB": {"team": "CSUNB", "elo": 1602.2, "sos": 0.5062, "driver": 72, "prog": 39}, "CSUNR": {"team": "CSUNR", "elo": 1597.5, "sos": 0.5373, "driver": 93, "prog": 44}, "CUMAE": {"team": "CUMAE", "elo": 1542.5, "sos": 0.6234, "driver": 92, "prog": 54}, "CYBER": {"team": "CYBER", "elo": 1415.7, "sos": 0.611, "driver": 30, "prog": 0}, "CZTU": {"team": "CZTU", "elo": 1496.8, "sos": 0.5362, "driver": 52, "prog": 28}, "DKFNX": {"team": "DKFNX", "elo": 1691.3, "sos": 0.6619, "driver": 121, "prog": 90}, "DTC1": {"team": "DTC1", "elo": 1555.0, "sos": 0.5031, "driver": 83, "prog": 0}, "DUCKZ": {"team": "DUCKZ", "elo": 1506.0, "sos": 0.665, "driver": 68, "prog": 30}, "EMORY7": {"team": "EMORY7", "elo": 1345.0, "sos": 0.5518, "driver": 0, "prog": 0}, "EMP": {"team": "EMP", "elo": 1400.2, "sos": 0.5525, "driver": 23, "prog": 0}, "EMU5": {"team": "EMU5", "elo": 1432.3, "sos": 0.5004, "driver": 4, "prog": 0}, "ERAUG": {"team": "ERAUG", "elo": 1407.5, "sos": 0.5675, "driver": 16, "prog": 15}, "ETAMU": {"team": "ETAMU", "elo": 1546.1, "sos": 0.5202, "driver": 91, "prog": 17}, "EZ": {"team": "EZ", "elo": 1806.1, "sos": 0.5355, "driver": 92, "prog": 44}, "EZPZ": {"team": "EZPZ", "elo": 1564.2, "sos": 0.6538, "driver": 117, "prog": 57}, "FOUR4": {"team": "FOUR4", "elo": 1406.0, "sos": 0.5246, "driver": 35, "prog": 0}, "FSU": {"team": "FSU", "elo": 1420.1, "sos": 0.6541, "driver": 20, "prog": 0}, "FVT": {"team": "FVT", "elo": 1505.1, "sos": 0.4708, "driver": 10, "prog": 0}, "GATR1": {"team": "GATR1", "elo": 1616.8, "sos": 0.5772, "driver": 113, "prog": 69}, "GATR2": {"team": "GATR2", "elo": 1391.5, "sos": 0.6761, "driver": 68, "prog": 35}, "GCUI": {"team": "GCUI", "elo": 1506.4, "sos": 0.4997, "driver": 39, "prog": 30}, "GSI": {"team": "GSI", "elo": 1739.5, "sos": 0.5256, "driver": 89, "prog": 44}, "GUARD": {"team": "GUARD", "elo": 1449.8, "sos": 0.517, "driver": 33, "prog": 0}, "GUST1": {"team": "GUST1", "elo": 1409.0, "sos": 0.4565, "driver": 4, "prog": 0}, "HA7": {"team": "HA7", "elo": 1447.9, "sos": 0.5124, "driver": 21, "prog": 0}, "HAIL": {"team": "HAIL", "elo": 1594.2, "sos": 0.5548, "driver": 91, "prog": 44}, "HAM7": {"team": "HAM7", "elo": 1429.3, "sos": 0.5497, "driver": 24, "prog": 0}, "HAS5": {"team": "HAS5", "elo": 1644.5, "sos": 0.5072, "driver": 26, "prog": 0}, "HAUI1": {"team": "HAUI1", "elo": 1452.4, "sos": 0.5078, "driver": 46, "prog": 20}, "HDU1": {"team": "HDU1", "elo": 1417.8, "sos": 0.5735, "driver": 0, "prog": 0}, "HEK3": {"team": "HEK3", "elo": 1515.2, "sos": 0.4754, "driver": 25, "prog": 0}, "HERD": {"team": "HERD", "elo": 1536.7, "sos": 0.5508, "driver": 60, "prog": 20}, "HITSZ1": {"team": "HITSZ1", "elo": 1533.6, "sos": 0.5877, "driver": 79, "prog": 40}, "HITSZ7": {"team": "HITSZ7", "elo": 1396.7, "sos": 0.5814, "driver": 37, "prog": 35}, "HITWH1": {"team": "HITWH1", "elo": 1423.8, "sos": 0.582, "driver": 0, "prog": 21}, "HSKY": {"team": "HSKY", "elo": 1509.7, "sos": 0.6305, "driver": 87, "prog": 42}, "HUST1": {"team": "HUST1", "elo": 1553.0, "sos": 0.5144, "driver": 69, "prog": 31}, "HUST2": {"team": "HUST2", "elo": 1546.0, "sos": 0.4911, "driver": 94, "prog": 109}, "IABC1": {"team": "IABC1", "elo": 1396.5, "sos": 0.5877, "driver": 26, "prog": 0}, "IEST1": {"team": "IEST1", "elo": 1606.5, "sos": 0.414, "driver": 42, "prog": 0}, "IKEN": {"team": "IKEN", "elo": 1483.9, "sos": 0.4867, "driver": 93, "prog": 73}, "ILLIN1": {"team": "ILLIN1", "elo": 1415.6, "sos": 0.592, "driver": 56, "prog": 35}, "ILLIN2": {"team": "ILLIN2", "elo": 1490.7, "sos": 0.5302, "driver": 58, "prog": 0}, "INADE1": {"team": "INADE1", "elo": 1432.2, "sos": 0.6097, "driver": 1, "prog": 0}, "INTRT": {"team": "INTRT", "elo": 1489.4, "sos": 0.5762, "driver": 92, "prog": 34}, "ITCDJ1": {"team": "ITCDJ1", "elo": 1644.5, "sos": 0.5148, "driver": 55, "prog": 10}, "ITESA1": {"team": "ITESA1", "elo": 1452.8, "sos": 0.5673, "driver": 45, "prog": 8}, "ITESM1": {"team": "ITESM1", "elo": 1585.9, "sos": 0.5127, "driver": 62, "prog": 17}, "ITMOR1": {"team": "ITMOR1", "elo": 1614.9, "sos": 0.5063, "driver": 54, "prog": 26}, "ITSHU": {"team": "ITSHU", "elo": 1482.1, "sos": 0.4905, "driver": 33, "prog": 0}, "ITSMQ": {"team": "ITSMQ", "elo": 1368.1, "sos": 0.5919, "driver": 26, "prog": 1}, "ITSOA1": {"team": "ITSOA1", "elo": 1495.6, "sos": 0.3624, "driver": 29, "prog": 1}, "ITSOE1": {"team": "ITSOE1", "elo": 1549.2, "sos": 0.4771, "driver": 47, "prog": 12}, "ITSOE2": {"team": "ITSOE2", "elo": 1525.3, "sos": 0.4442, "driver": 46, "prog": 9}, "IUM1": {"team": "IUM1", "elo": 1524.9, "sos": 0.4974, "driver": 44, "prog": 5}, "IUM2": {"team": "IUM2", "elo": 1459.1, "sos": 0.4051, "driver": 22, "prog": 15}, "JACKS": {"team": "JACKS", "elo": 1577.8, "sos": 0.5267, "driver": 94, "prog": 70}, "JHAWK": {"team": "JHAWK", "elo": 1475.3, "sos": 0.5313, "driver": 79, "prog": 54}, "JLU1": {"team": "JLU1", "elo": 1446.4, "sos": 0.5331, "driver": 38, "prog": 2}, "KAUTC1": {"team": "KAUTC1", "elo": 1537.9, "sos": 0.5216, "driver": 42, "prog": 11}, "KAUTC2": {"team": "KAUTC2", "elo": 1522.1, "sos": 0.5137, "driver": 35, "prog": 9}, "KBS3": {"team": "KBS3", "elo": 1393.6, "sos": 0.5591, "driver": 0, "prog": 0}, "KCST1": {"team": "KCST1", "elo": 1514.5, "sos": 0.4654, "driver": 60, "prog": 0}, "KGEAR": {"team": "KGEAR", "elo": 1413.2, "sos": 0.5184, "driver": 42, "prog": 15}, "KING": {"team": "KING", "elo": 1502.5, "sos": 0.6955, "driver": 0, "prog": 0}, "KKU1": {"team": "KKU1", "elo": 1396.1, "sos": 0.4265, "driver": 0, "prog": 0}, "KL": {"team": "KL", "elo": 1424.9, "sos": 0.5819, "driver": 0, "prog": 0}, "KRT1": {"team": "KRT1", "elo": 1456.2, "sos": 0.4881, "driver": 9, "prog": 0}, "KRT2": {"team": "KRT2", "elo": 1474.4, "sos": 0.521, "driver": 62, "prog": 32}, "KSUR1": {"team": "KSUR1", "elo": 1435.6, "sos": 0.4913, "driver": 0, "prog": 0}, "KTECH1": {"team": "KTECH1", "elo": 1439.8, "sos": 0.4559, "driver": 40, "prog": 1}, "KTECH2": {"team": "KTECH2", "elo": 1529.5, "sos": 0.5314, "driver": 48, "prog": 45}, "KU1": {"team": "KU1", "elo": 1541.9, "sos": 0.4416, "driver": 43, "prog": 31}, "KUDOS": {"team": "KUDOS", "elo": 1686.2, "sos": 0.6198, "driver": 112, "prog": 50}, "LOUIE": {"team": "LOUIE", "elo": 1789.7, "sos": 0.5511, "driver": 116, "prog": 53}, "LU": {"team": "LU", "elo": 1466.0, "sos": 0.4447, "driver": 63, "prog": 48}, "MAJMA1": {"team": "MAJMA1", "elo": 1537.1, "sos": 0.5174, "driver": 65, "prog": 0}, "MC": {"team": "MC", "elo": 1484.9, "sos": 0.4793, "driver": 0, "prog": 0}, "MC1": {"team": "MC1", "elo": 1512.5, "sos": 0.4811, "driver": 0, "prog": 0}, "MCE": {"team": "MCE", "elo": 1487.0, "sos": 0.4745, "driver": 18, "prog": 0}, "MCEC1": {"team": "MCEC1", "elo": 1250.5, "sos": 0.5652, "driver": 0, "prog": 0}, "MED1": {"team": "MED1", "elo": 1565.2, "sos": 0.4553, "driver": 64, "prog": 0}, "MEKEU1": {"team": "MEKEU1", "elo": 1514.6, "sos": 0.4942, "driver": 92, "prog": 73}, "MEKEU2": {"team": "MEKEU2", "elo": 1546.7, "sos": 0.4645, "driver": 107, "prog": 85}, "MEKEU3": {"team": "MEKEU3", "elo": 1486.8, "sos": 0.4992, "driver": 88, "prog": 70}, "MEKEU4": {"team": "MEKEU4", "elo": 1497.4, "sos": 0.4904, "driver": 87, "prog": 76}, "MINES": {"team": "MINES", "elo": 1427.9, "sos": 0.6156, "driver": 39, "prog": 16}, "MJ5": {"team": "MJ5", "elo": 1378.4, "sos": 0.5158, "driver": 40, "prog": 15}, "MSOE": {"team": "MSOE", "elo": 1485.2, "sos": 0.6157, "driver": 47, "prog": 17}, "MTG7": {"team": "MTG7", "elo": 1451.9, "sos": 0.4993, "driver": 0, "prog": 0}, "MTSAC1": {"team": "MTSAC1", "elo": 1492.8, "sos": 0.5377, "driver": 44, "prog": 10}, "MTSAC2": {"team": "MTSAC2", "elo": 1383.8, "sos": 0.5884, "driver": 35, "prog": 0}, "MTSAC3": {"team": "MTSAC3", "elo": 1326.8, "sos": 0.6043, "driver": 35, "prog": 0}, "NEUST1": {"team": "NEUST1", "elo": 1474.9, "sos": 0.5134, "driver": 41, "prog": 6}, "NJIT": {"team": "NJIT", "elo": 1496.3, "sos": 0.5586, "driver": 58, "prog": 30}, "NJUST": {"team": "NJUST", "elo": 1434.0, "sos": 0.5019, "driver": 0, "prog": 0}, "NJUST1": {"team": "NJUST1", "elo": 1420.7, "sos": 0.4819, "driver": 0, "prog": 0}, "NJUST2": {"team": "NJUST2", "elo": 1475.6, "sos": 0.5047, "driver": 0, "prog": 0}, "NJUST3": {"team": "NJUST3", "elo": 1399.2, "sos": 0.5483, "driver": 0, "prog": 0}, "NORM": {"team": "NORM", "elo": 1379.6, "sos": 0.5124, "driver": 15, "prog": 30}, "NYUSH1": {"team": "NYUSH1", "elo": 1340.7, "sos": 0.6129, "driver": 0, "prog": 0}, "OBR": {"team": "OBR", "elo": 1637.0, "sos": 0.404, "driver": 71, "prog": 35}, "OOPS": {"team": "OOPS", "elo": 1405.1, "sos": 0.6068, "driver": 37, "prog": 30}, "ORDGR": {"team": "ORDGR", "elo": 1448.9, "sos": 0.5102, "driver": 59, "prog": 11}, "OWL1": {"team": "OWL1", "elo": 1399.7, "sos": 0.5554, "driver": 31, "prog": 30}, "PAAET1": {"team": "PAAET1", "elo": 1442.4, "sos": 0.5055, "driver": 20, "prog": 0}, "PLATT1": {"team": "PLATT1", "elo": 1505.7, "sos": 0.5275, "driver": 53, "prog": 32}, "PLATT2": {"team": "PLATT2", "elo": 1489.7, "sos": 0.6847, "driver": 41, "prog": 30}, "PLATT3": {"team": "PLATT3", "elo": 1369.1, "sos": 0.6388, "driver": 25, "prog": 0}, "PNTHR": {"team": "PNTHR", "elo": 1502.2, "sos": 0.7565, "driver": 15, "prog": 0}, "PNU1": {"team": "PNU1", "elo": 1447.1, "sos": 0.4311, "driver": 0, "prog": 0}, "POLI": {"team": "POLI", "elo": 1518.6, "sos": 0.5196, "driver": 34, "prog": 15}, "POLY1": {"team": "POLY1", "elo": 1501.7, "sos": 0.6569, "driver": 39, "prog": 26}, "POTTR": {"team": "POTTR", "elo": 1492.4, "sos": 0.5842, "driver": 71, "prog": 30}, "PPA": {"team": "PPA", "elo": 1433.1, "sos": 0.57, "driver": 9, "prog": 0}, "PRVX": {"team": "PRVX", "elo": 1581.1, "sos": 0.8, "driver": 85, "prog": 35}, "PSAU": {"team": "PSAU", "elo": 1406.1, "sos": 0.4899, "driver": 27, "prog": 0}, "PSU1": {"team": "PSU1", "elo": 1519.8, "sos": 0.4748, "driver": 68, "prog": 66}, "PYRO": {"team": "PYRO", "elo": 1592.6, "sos": 0.4039, "driver": 30, "prog": 30}, "QCT2": {"team": "QCT2", "elo": 1402.5, "sos": 0.4993, "driver": 0, "prog": 0}, "QCU1": {"team": "QCU1", "elo": 1644.9, "sos": 0.4431, "driver": 111, "prog": 46}, "QCU2": {"team": "QCU2", "elo": 1541.7, "sos": 0.4928, "driver": 85, "prog": 19}, "QUEEN": {"team": "QUEEN", "elo": 1498.7, "sos": 0.3679, "driver": 47, "prog": 0}, "RCT1": {"team": "RCT1", "elo": 1559.2, "sos": 0.4599, "driver": 76, "prog": 25}, "RCXD1": {"team": "RCXD1", "elo": 1491.1, "sos": 0.481, "driver": 41, "prog": 12}, "RCXD2": {"team": "RCXD2", "elo": 1339.6, "sos": 0.4977, "driver": 15, "prog": 0}, "RCXD3": {"team": "RCXD3", "elo": 1323.3, "sos": 0.536, "driver": 9, "prog": 0}, "RIT": {"team": "RIT", "elo": 1563.5, "sos": 0.7584, "driver": 61, "prog": 30}, "ROHA1": {"team": "ROHA1", "elo": 1485.1, "sos": 0.479, "driver": 85, "prog": 74}, "ROHA8": {"team": "ROHA8", "elo": 1471.1, "sos": 0.5012, "driver": 88, "prog": 58}, "ROSE": {"team": "ROSE", "elo": 1573.5, "sos": 0.497, "driver": 0, "prog": 0}, "SCA": {"team": "SCA", "elo": 1553.3, "sos": 0.3, "driver": 34, "prog": 30}, "SCAR": {"team": "SCAR", "elo": 1571.5, "sos": 0.5898, "driver": 81, "prog": 30}, "SCRT1": {"team": "SCRT1", "elo": 1551.4, "sos": 0.578, "driver": 82, "prog": 59}, "SEEDT1": {"team": "SEEDT1", "elo": 1333.4, "sos": 0.5903, "driver": 45, "prog": 17}, "SHU": {"team": "SHU", "elo": 1422.0, "sos": 0.6145, "driver": 34, "prog": 30}, "SJTU1": {"team": "SJTU1", "elo": 1718.2, "sos": 0.5472, "driver": 120, "prog": 106}, "SJTU2": {"team": "SJTU2", "elo": 1604.5, "sos": 0.5748, "driver": 120, "prog": 31}, "SJTU3": {"team": "SJTU3", "elo": 1507.7, "sos": 0.4818, "driver": 65, "prog": 63}, "SKERS": {"team": "SKERS", "elo": 1720.2, "sos": 0.4662, "driver": 99, "prog": 45}, "SMP1": {"team": "SMP1", "elo": 1619.6, "sos": 0.588, "driver": 72, "prog": 2}, "SMP2": {"team": "SMP2", "elo": 1377.0, "sos": 0.4027, "driver": 20, "prog": 0}, "SNNUW": {"team": "SNNUW", "elo": 1444.4, "sos": 0.5254, "driver": 32, "prog": 0}, "SWU7": {"team": "SWU7", "elo": 1503.1, "sos": 0.545, "driver": 73, "prog": 19}, "SYSTM": {"team": "SYSTM", "elo": 1499.5, "sos": 0.6128, "driver": 80, "prog": 54}, "SZTU1": {"team": "SZTU1", "elo": 1525.9, "sos": 0.5294, "driver": 119, "prog": 54}, "SZTU2": {"team": "SZTU2", "elo": 1540.7, "sos": 0.4889, "driver": 112, "prog": 86}, "TCGMC2": {"team": "TCGMC2", "elo": 1811.9, "sos": 0.5171, "driver": 98, "prog": 59}, "TCMG1": {"team": "TCMG1", "elo": 1525.0, "sos": 0.562, "driver": 48, "prog": 22}, "TECHI": {"team": "TECHI", "elo": 1405.0, "sos": 0.6105, "driver": 50, "prog": 30}, "TECHI3": {"team": "TECHI3", "elo": 1470.5, "sos": 0.6123, "driver": 28, "prog": 30}, "TECMI1": {"team": "TECMI1", "elo": 1384.0, "sos": 0.5901, "driver": 5, "prog": 0}, "TECMI3": {"team": "TECMI3", "elo": 1494.6, "sos": 0.5307, "driver": 39, "prog": 15}, "TECMI4": {"team": "TECMI4", "elo": 1550.7, "sos": 0.5187, "driver": 17, "prog": 0}, "TIGRS": {"team": "TIGRS", "elo": 1532.9, "sos": 0.6443, "driver": 16, "prog": 0}, "TJU": {"team": "TJU", "elo": 1419.9, "sos": 0.5746, "driver": 53, "prog": 0}, "TJU2": {"team": "TJU2", "elo": 1476.5, "sos": 0.5059, "driver": 56, "prog": 35}, "TMAT1": {"team": "TMAT1", "elo": 1691.0, "sos": 0.5649, "driver": 102, "prog": 30}, "TMAT3": {"team": "TMAT3", "elo": 1473.2, "sos": 0.5652, "driver": 86, "prog": 41}, "TNTN": {"team": "TNTN", "elo": 1634.1, "sos": 0.4551, "driver": 134, "prog": 120}, "TRJNS": {"team": "TRJNS", "elo": 1430.9, "sos": 0.5473, "driver": 30, "prog": 30}, "TROBE": {"team": "TROBE", "elo": 1475.8, "sos": 0.5455, "driver": 0, "prog": 0}, "TVTCR1": {"team": "TVTCR1", "elo": 1602.7, "sos": 0.5217, "driver": 87, "prog": 12}, "UACH1": {"team": "UACH1", "elo": 1639.0, "sos": 0.5831, "driver": 64, "prog": 32}, "UAT1": {"team": "UAT1", "elo": 1493.5, "sos": 0.4855, "driver": 30, "prog": 0}, "UCCR1": {"team": "UCCR1", "elo": 1620.7, "sos": 0.4027, "driver": 64, "prog": 30}, "UCCR2": {"team": "UCCR2", "elo": 1461.0, "sos": 0.5083, "driver": 46, "prog": 35}, "UCF": {"team": "UCF", "elo": 1983.8, "sos": 0.5762, "driver": 134, "prog": 91}, "UCF7": {"team": "UCF7", "elo": 1634.6, "sos": 0.535, "driver": 108, "prog": 43}, "UCR1": {"team": "UCR1", "elo": 1362.2, "sos": 0.4618, "driver": 0, "prog": 0}, "UCSB1": {"team": "UCSB1", "elo": 1570.0, "sos": 0.6271, "driver": 89, "prog": 30}, "UDVEX": {"team": "UDVEX", "elo": 1537.4, "sos": 0.5314, "driver": 42, "prog": 30}, "UMBC": {"team": "UMBC", "elo": 1490.3, "sos": 0.5103, "driver": 32, "prog": 0}, "UMN": {"team": "UMN", "elo": 1589.6, "sos": 0.5328, "driver": 90, "prog": 30}, "UPCH1": {"team": "UPCH1", "elo": 1387.8, "sos": 0.5066, "driver": 31, "prog": 0}, "UPE1": {"team": "UPE1", "elo": 1356.2, "sos": 0.5731, "driver": 21, "prog": 0}, "UPFIM1": {"team": "UPFIM1", "elo": 1545.4, "sos": 0.5036, "driver": 57, "prog": 29}, "UPPAC1": {"team": "UPPAC1", "elo": 1416.0, "sos": 0.5862, "driver": 57, "prog": 12}, "UPPAC2": {"team": "UPPAC2", "elo": 1559.3, "sos": 0.5564, "driver": 43, "prog": 31}, "UPQR1": {"team": "UPQR1", "elo": 1426.0, "sos": 0.5754, "driver": 31, "prog": 15}, "UPRM": {"team": "UPRM", "elo": 1597.8, "sos": 0.3959, "driver": 30, "prog": 18}, "UPSP1": {"team": "UPSP1", "elo": 1717.3, "sos": 0.5949, "driver": 118, "prog": 70}, "UPT1": {"team": "UPT1", "elo": 1531.1, "sos": 0.4956, "driver": 67, "prog": 27}, "UPT5": {"team": "UPT5", "elo": 1647.2, "sos": 0.4962, "driver": 78, "prog": 21}, "UQU1": {"team": "UQU1", "elo": 1440.9, "sos": 0.5134, "driver": 50, "prog": 30}, "UQU2": {"team": "UQU2", "elo": 1482.9, "sos": 0.4765, "driver": 35, "prog": 0}, "USST1": {"team": "USST1", "elo": 1420.0, "sos": 0.5932, "driver": 0, "prog": 0}, "UTALT1": {"team": "UTALT1", "elo": 1399.6, "sos": 0.6196, "driver": 41, "prog": 0}, "UTALT2": {"team": "UTALT2", "elo": 1370.6, "sos": 0.5545, "driver": 27, "prog": 0}, "UTARA1": {"team": "UTARA1", "elo": 1380.1, "sos": 0.522, "driver": 24, "prog": 0}, "UTBAB1": {"team": "UTBAB1", "elo": 1506.7, "sos": 0.5002, "driver": 59, "prog": 6}, "UTBAB2": {"team": "UTBAB2", "elo": 1550.1, "sos": 0.5689, "driver": 45, "prog": 2}, "UTCHE1": {"team": "UTCHE1", "elo": 1334.3, "sos": 0.5822, "driver": 40, "prog": 8}, "UTCHH1": {"team": "UTCHH1", "elo": 1456.0, "sos": 0.606, "driver": 7, "prog": 0}, "UTCHS1": {"team": "UTCHS1", "elo": 1535.4, "sos": 0.515, "driver": 46, "prog": 20}, "UTCJ1": {"team": "UTCJ1", "elo": 1507.6, "sos": 0.5572, "driver": 73, "prog": 26}, "UTCJ2": {"team": "UTCJ2", "elo": 1505.2, "sos": 0.5843, "driver": 61, "prog": 20}, "UTEC1": {"team": "UTEC1", "elo": 1481.3, "sos": 0.5087, "driver": 36, "prog": 11}, "UTEC2": {"team": "UTEC2", "elo": 1418.4, "sos": 0.4449, "driver": 26, "prog": 5}, "UTHU1": {"team": "UTHU1", "elo": 1470.9, "sos": 0.475, "driver": 26, "prog": 0}, "UTMOR1": {"team": "UTMOR1", "elo": 1427.7, "sos": 0.5074, "driver": 36, "prog": 1}, "UTMR1": {"team": "UTMR1", "elo": 1457.0, "sos": 0.5099, "driver": 46, "prog": 5}, "UTMY1": {"team": "UTMY1", "elo": 1433.5, "sos": 0.4752, "driver": 20, "prog": 0}, "UTMZ1": {"team": "UTMZ1", "elo": 1436.8, "sos": 0.5172, "driver": 37, "prog": 0}, "UTPRR1": {"team": "UTPRR1", "elo": 1390.7, "sos": 0.5719, "driver": 33, "prog": 0}, "UTRMT": {"team": "UTRMT", "elo": 1365.9, "sos": 0.4342, "driver": 19, "prog": 0}, "UTSH1": {"team": "UTSH1", "elo": 1377.7, "sos": 0.5225, "driver": 48, "prog": 30}, "UTTT1": {"team": "UTTT1", "elo": 1414.4, "sos": 0.5308, "driver": 20, "prog": 1}, "UTVAM1": {"team": "UTVAM1", "elo": 1480.7, "sos": 0.4162, "driver": 36, "prog": 3}, "UTVMZ1": {"team": "UTVMZ1", "elo": 1652.5, "sos": 0.467, "driver": 61, "prog": 29}, "VCAT": {"team": "VCAT", "elo": 1568.6, "sos": 0.5374, "driver": 50, "prog": 11}, "VTCRO": {"team": "VTCRO", "elo": 1377.7, "sos": 0.4413, "driver": 30, "prog": 0}, "WCOE": {"team": "WCOE", "elo": 1383.2, "sos": 0.5223, "driver": 0, "prog": 0}, "WCRC": {"team": "WCRC", "elo": 1393.0, "sos": 0.5935, "driver": 35, "prog": 0}, "WLDCT": {"team": "WLDCT", "elo": 1528.9, "sos": 0.552, "driver": 49, "prog": 0}, "WPI": {"team": "WPI", "elo": 1644.3, "sos": 0.5801, "driver": 117, "prog": 96}, "WVUR1": {"team": "WVUR1", "elo": 1383.0, "sos": 0.4803, "driver": 30, "prog": 30}, "WVUTE1": {"team": "WVUTE1", "elo": 1663.6, "sos": 0.5536, "driver": 97, "prog": 95}, "XJTU1": {"team": "XJTU1", "elo": 1518.7, "sos": 0.4559, "driver": 66, "prog": 39}, "XJTU2": {"team": "XJTU2", "elo": 1449.9, "sos": 0.6458, "driver": 29, "prog": 0}, "ZIPS": {"team": "ZIPS", "elo": 1555.7, "sos": 0.6412, "driver": 110, "prog": 34}};
-  (function() {
-    var graphDiv  = document.getElementById('vurc-plot');
-    var input     = document.getElementById('team-input');
-    var btnSearch = document.getElementById('btn-search');
-    var btnClear  = document.getElementById('btn-clear');
-    var btnTheme  = document.getElementById('btn-theme');
-    var infoPanel = document.getElementById('info-panel');
+    var TEAM_DATA = { "AASU1": { "team": "AASU1", "elo": 1531.5, "sos": 0.4962, "driver": 45, "prog": 0 }, "ABHA9": { "team": "ABHA9", "elo": 1482.2, "sos": 0.4983, "driver": 76, "prog": 1 }, "ACU1": { "team": "ACU1", "elo": 1408.4, "sos": 0.4453, "driver": 18, "prog": 0 }, "AOU5": { "team": "AOU5", "elo": 1466.8, "sos": 0.452, "driver": 53, "prog": 0 }, "ARC": { "team": "ARC", "elo": 1683.3, "sos": 0.6098, "driver": 90, "prog": 59 }, "ARC2": { "team": "ARC2", "elo": 1327.2, "sos": 0.738, "driver": 0, "prog": 0 }, "ARC3": { "team": "ARC3", "elo": 1272.9, "sos": 0.6321, "driver": 37, "prog": 30 }, "AUBIE1": { "team": "AUBIE1", "elo": 1594.4, "sos": 0.6204, "driver": 62, "prog": 39 }, "AUBIE2": { "team": "AUBIE2", "elo": 1729.0, "sos": 0.5898, "driver": 106, "prog": 82 }, "AUGDC4": { "team": "AUGDC4", "elo": 1503.0, "sos": 0.5768, "driver": 0, "prog": 0 }, "AUK1": { "team": "AUK1", "elo": 1485.7, "sos": 0.472, "driver": 36, "prog": 8 }, "AUK2": { "team": "AUK2", "elo": 1441.6, "sos": 0.4972, "driver": 0, "prog": 0 }, "AUM1": { "team": "AUM1", "elo": 1624.7, "sos": 0.5291, "driver": 80, "prog": 39 }, "AUM2": { "team": "AUM2", "elo": 1515.7, "sos": 0.5261, "driver": 56, "prog": 29 }, "AURA": { "team": "AURA", "elo": 1513.3, "sos": 0.5228, "driver": 56, "prog": 30 }, "AUTRC1": { "team": "AUTRC1", "elo": 1405.0, "sos": 0.578, "driver": 11, "prog": 0 }, "AUU1": { "team": "AUU1", "elo": 1488.5, "sos": 0.4955, "driver": 15, "prog": 0 }, "BAD": { "team": "BAD", "elo": 1685.1, "sos": 0.5657, "driver": 0, "prog": 0 }, "BARG9": { "team": "BARG9", "elo": 1429.5, "sos": 0.5287, "driver": 4, "prog": 0 }, "BBR1": { "team": "BBR1", "elo": 1427.1, "sos": 0.4784, "driver": 56, "prog": 35 }, "BISON1": { "team": "BISON1", "elo": 1412.0, "sos": 0.5911, "driver": 24, "prog": 6 }, "BLRS": { "team": "BLRS", "elo": 1641.8, "sos": 0.5929, "driver": 90, "prog": 48 }, "BLRS2": { "team": "BLRS2", "elo": 1725.7, "sos": 0.5763, "driver": 105, "prog": 30 }, "BLZR1": { "team": "BLZR1", "elo": 1579.0, "sos": 0.5881, "driver": 99, "prog": 37 }, "BPCU": { "team": "BPCU", "elo": 1474.2, "sos": 0.5448, "driver": 69, "prog": 0 }, "BRYAN1": { "team": "BRYAN1", "elo": 1420.8, "sos": 0.548, "driver": 34, "prog": 0 }, "BRYAN2": { "team": "BRYAN2", "elo": 1470.5, "sos": 0.6494, "driver": 46, "prog": 0 }, "BRYAN3": { "team": "BRYAN3", "elo": 1399.0, "sos": 0.6444, "driver": 66, "prog": 30 }, "BTG1": { "team": "BTG1", "elo": 1478.9, "sos": 0.5076, "driver": 25, "prog": 0 }, "BU": { "team": "BU", "elo": 1421.1, "sos": 0.648, "driver": 19, "prog": 0 }, "BUCKS": { "team": "BUCKS", "elo": 1508.0, "sos": 0.5873, "driver": 56, "prog": 30 }, "BULL": { "team": "BULL", "elo": 1426.4, "sos": 0.6998, "driver": 29, "prog": 0 }, "BUXU": { "team": "BUXU", "elo": 1557.5, "sos": 0.4844, "driver": 132, "prog": 99 }, "BV1": { "team": "BV1", "elo": 1368.1, "sos": 0.7008, "driver": 0, "prog": 0 }, "BYTE1": { "team": "BYTE1", "elo": 1384.2, "sos": 0.5122, "driver": 0, "prog": 0 }, "CAP1": { "team": "CAP1", "elo": 1452.9, "sos": 0.4853, "driver": 0, "prog": 0 }, "CBU1": { "team": "CBU1", "elo": 1651.4, "sos": 0.461, "driver": 102, "prog": 66 }, "CCIT": { "team": "CCIT", "elo": 1462.1, "sos": 0.6328, "driver": 25, "prog": 20 }, "CCKAO": { "team": "CCKAO", "elo": 1576.1, "sos": 0.5041, "driver": 0, "prog": 0 }, "CDM1": { "team": "CDM1", "elo": 1480.1, "sos": 0.5081, "driver": 50, "prog": 13 }, "CLNKR": { "team": "CLNKR", "elo": 1457.3, "sos": 0.7057, "driver": 81, "prog": 58 }, "CODER2": { "team": "CODER2", "elo": 1514.4, "sos": 0.4531, "driver": 98, "prog": 83 }, "CPPRC1": { "team": "CPPRC1", "elo": 1398.7, "sos": 0.4396, "driver": 13, "prog": 0 }, "CPSLO": { "team": "CPSLO", "elo": 1820.5, "sos": 0.5675, "driver": 128, "prog": 37 }, "CQU1": { "team": "CQU1", "elo": 1666.0, "sos": 0.6507, "driver": 106, "prog": 45 }, "CSM": { "team": "CSM", "elo": 1679.2, "sos": 0.4207, "driver": 47, "prog": 10 }, "CSN1": { "team": "CSN1", "elo": 1518.6, "sos": 0.4773, "driver": 43, "prog": 0 }, "CSTU": { "team": "CSTU", "elo": 1708.5, "sos": 0.5538, "driver": 119, "prog": 90 }, "CSUNB": { "team": "CSUNB", "elo": 1602.2, "sos": 0.5062, "driver": 72, "prog": 39 }, "CSUNR": { "team": "CSUNR", "elo": 1597.5, "sos": 0.5373, "driver": 93, "prog": 44 }, "CUMAE": { "team": "CUMAE", "elo": 1542.5, "sos": 0.6234, "driver": 92, "prog": 54 }, "CYBER": { "team": "CYBER", "elo": 1415.7, "sos": 0.611, "driver": 30, "prog": 0 }, "CZTU": { "team": "CZTU", "elo": 1496.8, "sos": 0.5362, "driver": 52, "prog": 28 }, "DKFNX": { "team": "DKFNX", "elo": 1691.3, "sos": 0.6619, "driver": 121, "prog": 90 }, "DTC1": { "team": "DTC1", "elo": 1555.0, "sos": 0.5031, "driver": 83, "prog": 0 }, "DUCKZ": { "team": "DUCKZ", "elo": 1506.0, "sos": 0.665, "driver": 68, "prog": 30 }, "EMORY7": { "team": "EMORY7", "elo": 1345.0, "sos": 0.5518, "driver": 0, "prog": 0 }, "EMP": { "team": "EMP", "elo": 1400.2, "sos": 0.5525, "driver": 23, "prog": 0 }, "EMU5": { "team": "EMU5", "elo": 1432.3, "sos": 0.5004, "driver": 4, "prog": 0 }, "ERAUG": { "team": "ERAUG", "elo": 1407.5, "sos": 0.5675, "driver": 16, "prog": 15 }, "ETAMU": { "team": "ETAMU", "elo": 1546.1, "sos": 0.5202, "driver": 91, "prog": 17 }, "EZ": { "team": "EZ", "elo": 1806.1, "sos": 0.5355, "driver": 92, "prog": 44 }, "EZPZ": { "team": "EZPZ", "elo": 1564.2, "sos": 0.6538, "driver": 117, "prog": 57 }, "FOUR4": { "team": "FOUR4", "elo": 1406.0, "sos": 0.5246, "driver": 35, "prog": 0 }, "FSU": { "team": "FSU", "elo": 1420.1, "sos": 0.6541, "driver": 20, "prog": 0 }, "FVT": { "team": "FVT", "elo": 1505.1, "sos": 0.4708, "driver": 10, "prog": 0 }, "GATR1": { "team": "GATR1", "elo": 1616.8, "sos": 0.5772, "driver": 113, "prog": 69 }, "GATR2": { "team": "GATR2", "elo": 1391.5, "sos": 0.6761, "driver": 68, "prog": 35 }, "GCUI": { "team": "GCUI", "elo": 1506.4, "sos": 0.4997, "driver": 39, "prog": 30 }, "GSI": { "team": "GSI", "elo": 1739.5, "sos": 0.5256, "driver": 89, "prog": 44 }, "GUARD": { "team": "GUARD", "elo": 1449.8, "sos": 0.517, "driver": 33, "prog": 0 }, "GUST1": { "team": "GUST1", "elo": 1409.0, "sos": 0.4565, "driver": 4, "prog": 0 }, "HA7": { "team": "HA7", "elo": 1447.9, "sos": 0.5124, "driver": 21, "prog": 0 }, "HAIL": { "team": "HAIL", "elo": 1594.2, "sos": 0.5548, "driver": 91, "prog": 44 }, "HAM7": { "team": "HAM7", "elo": 1429.3, "sos": 0.5497, "driver": 24, "prog": 0 }, "HAS5": { "team": "HAS5", "elo": 1644.5, "sos": 0.5072, "driver": 26, "prog": 0 }, "HAUI1": { "team": "HAUI1", "elo": 1452.4, "sos": 0.5078, "driver": 46, "prog": 20 }, "HDU1": { "team": "HDU1", "elo": 1417.8, "sos": 0.5735, "driver": 0, "prog": 0 }, "HEK3": { "team": "HEK3", "elo": 1515.2, "sos": 0.4754, "driver": 25, "prog": 0 }, "HERD": { "team": "HERD", "elo": 1536.7, "sos": 0.5508, "driver": 60, "prog": 20 }, "HITSZ1": { "team": "HITSZ1", "elo": 1533.6, "sos": 0.5877, "driver": 79, "prog": 40 }, "HITSZ7": { "team": "HITSZ7", "elo": 1396.7, "sos": 0.5814, "driver": 37, "prog": 35 }, "HITWH1": { "team": "HITWH1", "elo": 1423.8, "sos": 0.582, "driver": 0, "prog": 21 }, "HSKY": { "team": "HSKY", "elo": 1509.7, "sos": 0.6305, "driver": 87, "prog": 42 }, "HUST1": { "team": "HUST1", "elo": 1553.0, "sos": 0.5144, "driver": 69, "prog": 31 }, "HUST2": { "team": "HUST2", "elo": 1546.0, "sos": 0.4911, "driver": 94, "prog": 109 }, "IABC1": { "team": "IABC1", "elo": 1396.5, "sos": 0.5877, "driver": 26, "prog": 0 }, "IEST1": { "team": "IEST1", "elo": 1606.5, "sos": 0.414, "driver": 42, "prog": 0 }, "IKEN": { "team": "IKEN", "elo": 1483.9, "sos": 0.4867, "driver": 93, "prog": 73 }, "ILLIN1": { "team": "ILLIN1", "elo": 1415.6, "sos": 0.592, "driver": 56, "prog": 35 }, "ILLIN2": { "team": "ILLIN2", "elo": 1490.7, "sos": 0.5302, "driver": 58, "prog": 0 }, "INADE1": { "team": "INADE1", "elo": 1432.2, "sos": 0.6097, "driver": 1, "prog": 0 }, "INTRT": { "team": "INTRT", "elo": 1489.4, "sos": 0.5762, "driver": 92, "prog": 34 }, "ITCDJ1": { "team": "ITCDJ1", "elo": 1644.5, "sos": 0.5148, "driver": 55, "prog": 10 }, "ITESA1": { "team": "ITESA1", "elo": 1452.8, "sos": 0.5673, "driver": 45, "prog": 8 }, "ITESM1": { "team": "ITESM1", "elo": 1585.9, "sos": 0.5127, "driver": 62, "prog": 17 }, "ITMOR1": { "team": "ITMOR1", "elo": 1614.9, "sos": 0.5063, "driver": 54, "prog": 26 }, "ITSHU": { "team": "ITSHU", "elo": 1482.1, "sos": 0.4905, "driver": 33, "prog": 0 }, "ITSMQ": { "team": "ITSMQ", "elo": 1368.1, "sos": 0.5919, "driver": 26, "prog": 1 }, "ITSOA1": { "team": "ITSOA1", "elo": 1495.6, "sos": 0.3624, "driver": 29, "prog": 1 }, "ITSOE1": { "team": "ITSOE1", "elo": 1549.2, "sos": 0.4771, "driver": 47, "prog": 12 }, "ITSOE2": { "team": "ITSOE2", "elo": 1525.3, "sos": 0.4442, "driver": 46, "prog": 9 }, "IUM1": { "team": "IUM1", "elo": 1524.9, "sos": 0.4974, "driver": 44, "prog": 5 }, "IUM2": { "team": "IUM2", "elo": 1459.1, "sos": 0.4051, "driver": 22, "prog": 15 }, "JACKS": { "team": "JACKS", "elo": 1577.8, "sos": 0.5267, "driver": 94, "prog": 70 }, "JHAWK": { "team": "JHAWK", "elo": 1475.3, "sos": 0.5313, "driver": 79, "prog": 54 }, "JLU1": { "team": "JLU1", "elo": 1446.4, "sos": 0.5331, "driver": 38, "prog": 2 }, "KAUTC1": { "team": "KAUTC1", "elo": 1537.9, "sos": 0.5216, "driver": 42, "prog": 11 }, "KAUTC2": { "team": "KAUTC2", "elo": 1522.1, "sos": 0.5137, "driver": 35, "prog": 9 }, "KBS3": { "team": "KBS3", "elo": 1393.6, "sos": 0.5591, "driver": 0, "prog": 0 }, "KCST1": { "team": "KCST1", "elo": 1514.5, "sos": 0.4654, "driver": 60, "prog": 0 }, "KGEAR": { "team": "KGEAR", "elo": 1413.2, "sos": 0.5184, "driver": 42, "prog": 15 }, "KING": { "team": "KING", "elo": 1502.5, "sos": 0.6955, "driver": 0, "prog": 0 }, "KKU1": { "team": "KKU1", "elo": 1396.1, "sos": 0.4265, "driver": 0, "prog": 0 }, "KL": { "team": "KL", "elo": 1424.9, "sos": 0.5819, "driver": 0, "prog": 0 }, "KRT1": { "team": "KRT1", "elo": 1456.2, "sos": 0.4881, "driver": 9, "prog": 0 }, "KRT2": { "team": "KRT2", "elo": 1474.4, "sos": 0.521, "driver": 62, "prog": 32 }, "KSUR1": { "team": "KSUR1", "elo": 1435.6, "sos": 0.4913, "driver": 0, "prog": 0 }, "KTECH1": { "team": "KTECH1", "elo": 1439.8, "sos": 0.4559, "driver": 40, "prog": 1 }, "KTECH2": { "team": "KTECH2", "elo": 1529.5, "sos": 0.5314, "driver": 48, "prog": 45 }, "KU1": { "team": "KU1", "elo": 1541.9, "sos": 0.4416, "driver": 43, "prog": 31 }, "KUDOS": { "team": "KUDOS", "elo": 1686.2, "sos": 0.6198, "driver": 112, "prog": 50 }, "LOUIE": { "team": "LOUIE", "elo": 1789.7, "sos": 0.5511, "driver": 116, "prog": 53 }, "LU": { "team": "LU", "elo": 1466.0, "sos": 0.4447, "driver": 63, "prog": 48 }, "MAJMA1": { "team": "MAJMA1", "elo": 1537.1, "sos": 0.5174, "driver": 65, "prog": 0 }, "MC": { "team": "MC", "elo": 1484.9, "sos": 0.4793, "driver": 0, "prog": 0 }, "MC1": { "team": "MC1", "elo": 1512.5, "sos": 0.4811, "driver": 0, "prog": 0 }, "MCE": { "team": "MCE", "elo": 1487.0, "sos": 0.4745, "driver": 18, "prog": 0 }, "MCEC1": { "team": "MCEC1", "elo": 1250.5, "sos": 0.5652, "driver": 0, "prog": 0 }, "MED1": { "team": "MED1", "elo": 1565.2, "sos": 0.4553, "driver": 64, "prog": 0 }, "MEKEU1": { "team": "MEKEU1", "elo": 1514.6, "sos": 0.4942, "driver": 92, "prog": 73 }, "MEKEU2": { "team": "MEKEU2", "elo": 1546.7, "sos": 0.4645, "driver": 107, "prog": 85 }, "MEKEU3": { "team": "MEKEU3", "elo": 1486.8, "sos": 0.4992, "driver": 88, "prog": 70 }, "MEKEU4": { "team": "MEKEU4", "elo": 1497.4, "sos": 0.4904, "driver": 87, "prog": 76 }, "MINES": { "team": "MINES", "elo": 1427.9, "sos": 0.6156, "driver": 39, "prog": 16 }, "MJ5": { "team": "MJ5", "elo": 1378.4, "sos": 0.5158, "driver": 40, "prog": 15 }, "MSOE": { "team": "MSOE", "elo": 1485.2, "sos": 0.6157, "driver": 47, "prog": 17 }, "MTG7": { "team": "MTG7", "elo": 1451.9, "sos": 0.4993, "driver": 0, "prog": 0 }, "MTSAC1": { "team": "MTSAC1", "elo": 1492.8, "sos": 0.5377, "driver": 44, "prog": 10 }, "MTSAC2": { "team": "MTSAC2", "elo": 1383.8, "sos": 0.5884, "driver": 35, "prog": 0 }, "MTSAC3": { "team": "MTSAC3", "elo": 1326.8, "sos": 0.6043, "driver": 35, "prog": 0 }, "NEUST1": { "team": "NEUST1", "elo": 1474.9, "sos": 0.5134, "driver": 41, "prog": 6 }, "NJIT": { "team": "NJIT", "elo": 1496.3, "sos": 0.5586, "driver": 58, "prog": 30 }, "NJUST": { "team": "NJUST", "elo": 1434.0, "sos": 0.5019, "driver": 0, "prog": 0 }, "NJUST1": { "team": "NJUST1", "elo": 1420.7, "sos": 0.4819, "driver": 0, "prog": 0 }, "NJUST2": { "team": "NJUST2", "elo": 1475.6, "sos": 0.5047, "driver": 0, "prog": 0 }, "NJUST3": { "team": "NJUST3", "elo": 1399.2, "sos": 0.5483, "driver": 0, "prog": 0 }, "NORM": { "team": "NORM", "elo": 1379.6, "sos": 0.5124, "driver": 15, "prog": 30 }, "NYUSH1": { "team": "NYUSH1", "elo": 1340.7, "sos": 0.6129, "driver": 0, "prog": 0 }, "OBR": { "team": "OBR", "elo": 1637.0, "sos": 0.404, "driver": 71, "prog": 35 }, "OOPS": { "team": "OOPS", "elo": 1405.1, "sos": 0.6068, "driver": 37, "prog": 30 }, "ORDGR": { "team": "ORDGR", "elo": 1448.9, "sos": 0.5102, "driver": 59, "prog": 11 }, "OWL1": { "team": "OWL1", "elo": 1399.7, "sos": 0.5554, "driver": 31, "prog": 30 }, "PAAET1": { "team": "PAAET1", "elo": 1442.4, "sos": 0.5055, "driver": 20, "prog": 0 }, "PLATT1": { "team": "PLATT1", "elo": 1505.7, "sos": 0.5275, "driver": 53, "prog": 32 }, "PLATT2": { "team": "PLATT2", "elo": 1489.7, "sos": 0.6847, "driver": 41, "prog": 30 }, "PLATT3": { "team": "PLATT3", "elo": 1369.1, "sos": 0.6388, "driver": 25, "prog": 0 }, "PNTHR": { "team": "PNTHR", "elo": 1502.2, "sos": 0.7565, "driver": 15, "prog": 0 }, "PNU1": { "team": "PNU1", "elo": 1447.1, "sos": 0.4311, "driver": 0, "prog": 0 }, "POLI": { "team": "POLI", "elo": 1518.6, "sos": 0.5196, "driver": 34, "prog": 15 }, "POLY1": { "team": "POLY1", "elo": 1501.7, "sos": 0.6569, "driver": 39, "prog": 26 }, "POTTR": { "team": "POTTR", "elo": 1492.4, "sos": 0.5842, "driver": 71, "prog": 30 }, "PPA": { "team": "PPA", "elo": 1433.1, "sos": 0.57, "driver": 9, "prog": 0 }, "PRVX": { "team": "PRVX", "elo": 1581.1, "sos": 0.8, "driver": 85, "prog": 35 }, "PSAU": { "team": "PSAU", "elo": 1406.1, "sos": 0.4899, "driver": 27, "prog": 0 }, "PSU1": { "team": "PSU1", "elo": 1519.8, "sos": 0.4748, "driver": 68, "prog": 66 }, "PYRO": { "team": "PYRO", "elo": 1592.6, "sos": 0.4039, "driver": 30, "prog": 30 }, "QCT2": { "team": "QCT2", "elo": 1402.5, "sos": 0.4993, "driver": 0, "prog": 0 }, "QCU1": { "team": "QCU1", "elo": 1644.9, "sos": 0.4431, "driver": 111, "prog": 46 }, "QCU2": { "team": "QCU2", "elo": 1541.7, "sos": 0.4928, "driver": 85, "prog": 19 }, "QUEEN": { "team": "QUEEN", "elo": 1498.7, "sos": 0.3679, "driver": 47, "prog": 0 }, "RCT1": { "team": "RCT1", "elo": 1559.2, "sos": 0.4599, "driver": 76, "prog": 25 }, "RCXD1": { "team": "RCXD1", "elo": 1491.1, "sos": 0.481, "driver": 41, "prog": 12 }, "RCXD2": { "team": "RCXD2", "elo": 1339.6, "sos": 0.4977, "driver": 15, "prog": 0 }, "RCXD3": { "team": "RCXD3", "elo": 1323.3, "sos": 0.536, "driver": 9, "prog": 0 }, "RIT": { "team": "RIT", "elo": 1563.5, "sos": 0.7584, "driver": 61, "prog": 30 }, "ROHA1": { "team": "ROHA1", "elo": 1485.1, "sos": 0.479, "driver": 85, "prog": 74 }, "ROHA8": { "team": "ROHA8", "elo": 1471.1, "sos": 0.5012, "driver": 88, "prog": 58 }, "ROSE": { "team": "ROSE", "elo": 1573.5, "sos": 0.497, "driver": 0, "prog": 0 }, "SCA": { "team": "SCA", "elo": 1553.3, "sos": 0.3, "driver": 34, "prog": 30 }, "SCAR": { "team": "SCAR", "elo": 1571.5, "sos": 0.5898, "driver": 81, "prog": 30 }, "SCRT1": { "team": "SCRT1", "elo": 1551.4, "sos": 0.578, "driver": 82, "prog": 59 }, "SEEDT1": { "team": "SEEDT1", "elo": 1333.4, "sos": 0.5903, "driver": 45, "prog": 17 }, "SHU": { "team": "SHU", "elo": 1422.0, "sos": 0.6145, "driver": 34, "prog": 30 }, "SJTU1": { "team": "SJTU1", "elo": 1718.2, "sos": 0.5472, "driver": 120, "prog": 106 }, "SJTU2": { "team": "SJTU2", "elo": 1604.5, "sos": 0.5748, "driver": 120, "prog": 31 }, "SJTU3": { "team": "SJTU3", "elo": 1507.7, "sos": 0.4818, "driver": 65, "prog": 63 }, "SKERS": { "team": "SKERS", "elo": 1720.2, "sos": 0.4662, "driver": 99, "prog": 45 }, "SMP1": { "team": "SMP1", "elo": 1619.6, "sos": 0.588, "driver": 72, "prog": 2 }, "SMP2": { "team": "SMP2", "elo": 1377.0, "sos": 0.4027, "driver": 20, "prog": 0 }, "SNNUW": { "team": "SNNUW", "elo": 1444.4, "sos": 0.5254, "driver": 32, "prog": 0 }, "SWU7": { "team": "SWU7", "elo": 1503.1, "sos": 0.545, "driver": 73, "prog": 19 }, "SYSTM": { "team": "SYSTM", "elo": 1499.5, "sos": 0.6128, "driver": 80, "prog": 54 }, "SZTU1": { "team": "SZTU1", "elo": 1525.9, "sos": 0.5294, "driver": 119, "prog": 54 }, "SZTU2": { "team": "SZTU2", "elo": 1540.7, "sos": 0.4889, "driver": 112, "prog": 86 }, "TCGMC2": { "team": "TCGMC2", "elo": 1811.9, "sos": 0.5171, "driver": 98, "prog": 59 }, "TCMG1": { "team": "TCMG1", "elo": 1525.0, "sos": 0.562, "driver": 48, "prog": 22 }, "TECHI": { "team": "TECHI", "elo": 1405.0, "sos": 0.6105, "driver": 50, "prog": 30 }, "TECHI3": { "team": "TECHI3", "elo": 1470.5, "sos": 0.6123, "driver": 28, "prog": 30 }, "TECMI1": { "team": "TECMI1", "elo": 1384.0, "sos": 0.5901, "driver": 5, "prog": 0 }, "TECMI3": { "team": "TECMI3", "elo": 1494.6, "sos": 0.5307, "driver": 39, "prog": 15 }, "TECMI4": { "team": "TECMI4", "elo": 1550.7, "sos": 0.5187, "driver": 17, "prog": 0 }, "TIGRS": { "team": "TIGRS", "elo": 1532.9, "sos": 0.6443, "driver": 16, "prog": 0 }, "TJU": { "team": "TJU", "elo": 1419.9, "sos": 0.5746, "driver": 53, "prog": 0 }, "TJU2": { "team": "TJU2", "elo": 1476.5, "sos": 0.5059, "driver": 56, "prog": 35 }, "TMAT1": { "team": "TMAT1", "elo": 1691.0, "sos": 0.5649, "driver": 102, "prog": 30 }, "TMAT3": { "team": "TMAT3", "elo": 1473.2, "sos": 0.5652, "driver": 86, "prog": 41 }, "TNTN": { "team": "TNTN", "elo": 1634.1, "sos": 0.4551, "driver": 134, "prog": 120 }, "TRJNS": { "team": "TRJNS", "elo": 1430.9, "sos": 0.5473, "driver": 30, "prog": 30 }, "TROBE": { "team": "TROBE", "elo": 1475.8, "sos": 0.5455, "driver": 0, "prog": 0 }, "TVTCR1": { "team": "TVTCR1", "elo": 1602.7, "sos": 0.5217, "driver": 87, "prog": 12 }, "UACH1": { "team": "UACH1", "elo": 1639.0, "sos": 0.5831, "driver": 64, "prog": 32 }, "UAT1": { "team": "UAT1", "elo": 1493.5, "sos": 0.4855, "driver": 30, "prog": 0 }, "UCCR1": { "team": "UCCR1", "elo": 1620.7, "sos": 0.4027, "driver": 64, "prog": 30 }, "UCCR2": { "team": "UCCR2", "elo": 1461.0, "sos": 0.5083, "driver": 46, "prog": 35 }, "UCF": { "team": "UCF", "elo": 1983.8, "sos": 0.5762, "driver": 134, "prog": 91 }, "UCF7": { "team": "UCF7", "elo": 1634.6, "sos": 0.535, "driver": 108, "prog": 43 }, "UCR1": { "team": "UCR1", "elo": 1362.2, "sos": 0.4618, "driver": 0, "prog": 0 }, "UCSB1": { "team": "UCSB1", "elo": 1570.0, "sos": 0.6271, "driver": 89, "prog": 30 }, "UDVEX": { "team": "UDVEX", "elo": 1537.4, "sos": 0.5314, "driver": 42, "prog": 30 }, "UMBC": { "team": "UMBC", "elo": 1490.3, "sos": 0.5103, "driver": 32, "prog": 0 }, "UMN": { "team": "UMN", "elo": 1589.6, "sos": 0.5328, "driver": 90, "prog": 30 }, "UPCH1": { "team": "UPCH1", "elo": 1387.8, "sos": 0.5066, "driver": 31, "prog": 0 }, "UPE1": { "team": "UPE1", "elo": 1356.2, "sos": 0.5731, "driver": 21, "prog": 0 }, "UPFIM1": { "team": "UPFIM1", "elo": 1545.4, "sos": 0.5036, "driver": 57, "prog": 29 }, "UPPAC1": { "team": "UPPAC1", "elo": 1416.0, "sos": 0.5862, "driver": 57, "prog": 12 }, "UPPAC2": { "team": "UPPAC2", "elo": 1559.3, "sos": 0.5564, "driver": 43, "prog": 31 }, "UPQR1": { "team": "UPQR1", "elo": 1426.0, "sos": 0.5754, "driver": 31, "prog": 15 }, "UPRM": { "team": "UPRM", "elo": 1597.8, "sos": 0.3959, "driver": 30, "prog": 18 }, "UPSP1": { "team": "UPSP1", "elo": 1717.3, "sos": 0.5949, "driver": 118, "prog": 70 }, "UPT1": { "team": "UPT1", "elo": 1531.1, "sos": 0.4956, "driver": 67, "prog": 27 }, "UPT5": { "team": "UPT5", "elo": 1647.2, "sos": 0.4962, "driver": 78, "prog": 21 }, "UQU1": { "team": "UQU1", "elo": 1440.9, "sos": 0.5134, "driver": 50, "prog": 30 }, "UQU2": { "team": "UQU2", "elo": 1482.9, "sos": 0.4765, "driver": 35, "prog": 0 }, "USST1": { "team": "USST1", "elo": 1420.0, "sos": 0.5932, "driver": 0, "prog": 0 }, "UTALT1": { "team": "UTALT1", "elo": 1399.6, "sos": 0.6196, "driver": 41, "prog": 0 }, "UTALT2": { "team": "UTALT2", "elo": 1370.6, "sos": 0.5545, "driver": 27, "prog": 0 }, "UTARA1": { "team": "UTARA1", "elo": 1380.1, "sos": 0.522, "driver": 24, "prog": 0 }, "UTBAB1": { "team": "UTBAB1", "elo": 1506.7, "sos": 0.5002, "driver": 59, "prog": 6 }, "UTBAB2": { "team": "UTBAB2", "elo": 1550.1, "sos": 0.5689, "driver": 45, "prog": 2 }, "UTCHE1": { "team": "UTCHE1", "elo": 1334.3, "sos": 0.5822, "driver": 40, "prog": 8 }, "UTCHH1": { "team": "UTCHH1", "elo": 1456.0, "sos": 0.606, "driver": 7, "prog": 0 }, "UTCHS1": { "team": "UTCHS1", "elo": 1535.4, "sos": 0.515, "driver": 46, "prog": 20 }, "UTCJ1": { "team": "UTCJ1", "elo": 1507.6, "sos": 0.5572, "driver": 73, "prog": 26 }, "UTCJ2": { "team": "UTCJ2", "elo": 1505.2, "sos": 0.5843, "driver": 61, "prog": 20 }, "UTEC1": { "team": "UTEC1", "elo": 1481.3, "sos": 0.5087, "driver": 36, "prog": 11 }, "UTEC2": { "team": "UTEC2", "elo": 1418.4, "sos": 0.4449, "driver": 26, "prog": 5 }, "UTHU1": { "team": "UTHU1", "elo": 1470.9, "sos": 0.475, "driver": 26, "prog": 0 }, "UTMOR1": { "team": "UTMOR1", "elo": 1427.7, "sos": 0.5074, "driver": 36, "prog": 1 }, "UTMR1": { "team": "UTMR1", "elo": 1457.0, "sos": 0.5099, "driver": 46, "prog": 5 }, "UTMY1": { "team": "UTMY1", "elo": 1433.5, "sos": 0.4752, "driver": 20, "prog": 0 }, "UTMZ1": { "team": "UTMZ1", "elo": 1436.8, "sos": 0.5172, "driver": 37, "prog": 0 }, "UTPRR1": { "team": "UTPRR1", "elo": 1390.7, "sos": 0.5719, "driver": 33, "prog": 0 }, "UTRMT": { "team": "UTRMT", "elo": 1365.9, "sos": 0.4342, "driver": 19, "prog": 0 }, "UTSH1": { "team": "UTSH1", "elo": 1377.7, "sos": 0.5225, "driver": 48, "prog": 30 }, "UTTT1": { "team": "UTTT1", "elo": 1414.4, "sos": 0.5308, "driver": 20, "prog": 1 }, "UTVAM1": { "team": "UTVAM1", "elo": 1480.7, "sos": 0.4162, "driver": 36, "prog": 3 }, "UTVMZ1": { "team": "UTVMZ1", "elo": 1652.5, "sos": 0.467, "driver": 61, "prog": 29 }, "VCAT": { "team": "VCAT", "elo": 1568.6, "sos": 0.5374, "driver": 50, "prog": 11 }, "VTCRO": { "team": "VTCRO", "elo": 1377.7, "sos": 0.4413, "driver": 30, "prog": 0 }, "WCOE": { "team": "WCOE", "elo": 1383.2, "sos": 0.5223, "driver": 0, "prog": 0 }, "WCRC": { "team": "WCRC", "elo": 1393.0, "sos": 0.5935, "driver": 35, "prog": 0 }, "WLDCT": { "team": "WLDCT", "elo": 1528.9, "sos": 0.552, "driver": 49, "prog": 0 }, "WPI": { "team": "WPI", "elo": 1644.3, "sos": 0.5801, "driver": 117, "prog": 96 }, "WVUR1": { "team": "WVUR1", "elo": 1383.0, "sos": 0.4803, "driver": 30, "prog": 30 }, "WVUTE1": { "team": "WVUTE1", "elo": 1663.6, "sos": 0.5536, "driver": 97, "prog": 95 }, "XJTU1": { "team": "XJTU1", "elo": 1518.7, "sos": 0.4559, "driver": 66, "prog": 39 }, "XJTU2": { "team": "XJTU2", "elo": 1449.9, "sos": 0.6458, "driver": 29, "prog": 0 }, "ZIPS": { "team": "ZIPS", "elo": 1555.7, "sos": 0.6412, "driver": 110, "prog": 34 } };
+    (function () {
+      var graphDiv = document.getElementById('vurc-plot');
+      var input = document.getElementById('team-input');
+      var btnSearch = document.getElementById('btn-search');
+      var btnClear = document.getElementById('btn-clear');
+      var btnTheme = document.getElementById('btn-theme');
+      var infoPanel = document.getElementById('info-panel');
 
-    /* ═══════════════ 主题切换 ═══════════════ */
-    var themes = {
-      dark: {
-        paper_bgcolor: '#0d1117',
-        plot_bgcolor:  '#161b22',
-        gridcolor:     '#21262d',
-        fontcolor:     '#c9d1d9',
-        titlecolor:    '#e6edf3',
-        tickcolor:     '#8b949e',
-        textcolor:     '#c9d1d9',
-        textcolorDim:  '#8b949e',
-        cbTitleColor:  '#c9d1d9',
-        cbTickColor:   '#8b949e',
-        icon:          '☀️'
-      },
-      light: {
-        paper_bgcolor: '#ffffff',
-        plot_bgcolor:  '#f6f8fa',
-        gridcolor:     '#d0d7de',
-        fontcolor:     '#1f2328',
-        titlecolor:    '#1f2328',
-        tickcolor:     '#656d76',
-        textcolor:     '#24292f',
-        textcolorDim:  '#656d76',
-        cbTitleColor:  '#1f2328',
-        cbTickColor:   '#656d76',
-        icon:          '🌙'
+      /* ═══════════════ 主题切换 ═══════════════ */
+      var themes = {
+        dark: {
+          paper_bgcolor: '#0d1117',
+          plot_bgcolor: '#161b22',
+          gridcolor: '#21262d',
+          fontcolor: '#c9d1d9',
+          titlecolor: '#e6edf3',
+          tickcolor: '#8b949e',
+          textcolor: '#c9d1d9',
+          textcolorDim: '#8b949e',
+          cbTitleColor: '#c9d1d9',
+          cbTickColor: '#8b949e',
+          icon: '☀️'
+        },
+        light: {
+          paper_bgcolor: '#ffffff',
+          plot_bgcolor: '#f6f8fa',
+          gridcolor: '#d0d7de',
+          fontcolor: '#1f2328',
+          titlecolor: '#1f2328',
+          tickcolor: '#656d76',
+          textcolor: '#24292f',
+          textcolorDim: '#656d76',
+          cbTitleColor: '#1f2328',
+          cbTickColor: '#656d76',
+          icon: '🌙'
+        }
+      };
+
+      function currentTheme() {
+        return document.documentElement.getAttribute('data-theme') || 'dark';
       }
-    };
 
-    function currentTheme() {
-      return document.documentElement.getAttribute('data-theme') || 'dark';
-    }
+      function applyPlotlyTheme(t) {
+        if (!graphDiv || !graphDiv.data) return;
+        var s = themes[t];
 
-    function applyPlotlyTheme(t) {
-      if (!graphDiv || !graphDiv.data) return;
-      var s = themes[t];
+        // 布局更新
+        Plotly.relayout(graphDiv, {
+          'paper_bgcolor': s.paper_bgcolor,
+          'plot_bgcolor': s.plot_bgcolor,
+          'xaxis.gridcolor': s.gridcolor,
+          'yaxis.gridcolor': s.gridcolor,
+          'xaxis.tickfont.color': s.tickcolor,
+          'yaxis.tickfont.color': s.tickcolor,
+          'xaxis.title.font.color': s.fontcolor,
+          'yaxis.title.font.color': s.fontcolor,
+          'title.font.color': s.titlecolor,
+          'font.color': s.fontcolor
+        });
 
-      // 布局更新
-      Plotly.relayout(graphDiv, {
-        'paper_bgcolor': s.paper_bgcolor,
-        'plot_bgcolor':  s.plot_bgcolor,
-        'xaxis.gridcolor': s.gridcolor,
-        'yaxis.gridcolor': s.gridcolor,
-        'xaxis.tickfont.color': s.tickcolor,
-        'yaxis.tickfont.color': s.tickcolor,
-        'xaxis.title.font.color': s.fontcolor,
-        'yaxis.title.font.color': s.fontcolor,
-        'title.font.color': s.titlecolor,
-        'font.color': s.fontcolor
+        // 每个 trace 的文字和 colorbar 颜色
+        for (var ti = 0; ti < graphDiv.data.length; ti++) {
+          var update = {
+            'textfont.color': ti === 0 ? s.textcolor : s.textcolorDim
+          };
+          // 只对有 colorbar 的 trace 更新颜色
+          if (graphDiv.data[ti].marker && graphDiv.data[ti].marker.colorbar) {
+            update['marker.colorbar.title.font.color'] = s.cbTitleColor;
+            update['marker.colorbar.tickfont.color'] = s.cbTickColor;
+          }
+          Plotly.restyle(graphDiv, update, [ti]);
+        }
+      }
+
+      btnTheme.addEventListener('click', function () {
+        var next = currentTheme() === 'dark' ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-theme', next);
+        btnTheme.textContent = themes[next].icon;
+        applyPlotlyTheme(next);
       });
 
-      // 每个 trace 的文字和 colorbar 颜色
-      for (var ti = 0; ti < graphDiv.data.length; ti++) {
-        var update = {
-          'textfont.color': ti === 0 ? s.textcolor : s.textcolorDim
-        };
-        // 只对有 colorbar 的 trace 更新颜色
-        if (graphDiv.data[ti].marker && graphDiv.data[ti].marker.colorbar) {
-          update['marker.colorbar.title.font.color'] = s.cbTitleColor;
-          update['marker.colorbar.tickfont.color']    = s.cbTickColor;
+      /* ═══════════════ 搜索逻辑 ═══════════════ */
+
+      function parseQueries(raw) {
+        return raw.split('/').map(function (s) { return s.trim().toUpperCase(); })
+          .filter(function (s) { return s.length > 0; });
+      }
+
+      function isMatch(name, queries) {
+        for (var q = 0; q < queries.length; q++) {
+          if (name.indexOf(queries[q]) !== -1) return true;
         }
-        Plotly.restyle(graphDiv, update, [ti]);
+        return false;
       }
-    }
 
-    btnTheme.addEventListener('click', function() {
-      var next = currentTheme() === 'dark' ? 'light' : 'dark';
-      document.documentElement.setAttribute('data-theme', next);
-      btnTheme.textContent = themes[next].icon;
-      applyPlotlyTheme(next);
-    });
+      function highlightTeam() {
+        var queries = parseQueries(input.value);
+        if (!queries.length || !graphDiv || !graphDiv.data) return;
 
-    /* ═══════════════ 搜索逻辑 ═══════════════ */
+        var matchedNames = {};
 
-    function parseQueries(raw) {
-      return raw.split('/').map(function(s) { return s.trim().toUpperCase(); })
-                .filter(function(s) { return s.length > 0; });
-    }
+        var nTraces = graphDiv.data.length;
+        for (var ti = 0; ti < nTraces; ti++) {
+          var trace = graphDiv.data[ti];
+          var texts = trace.text || [];
+          var n = texts.length;
+          var widths = new Array(n);
+          var colors = new Array(n);
+          var opacities = new Array(n);
 
-    function isMatch(name, queries) {
-      for (var q = 0; q < queries.length; q++) {
-        if (name.indexOf(queries[q]) !== -1) return true;
-      }
-      return false;
-    }
-
-    function highlightTeam() {
-      var queries = parseQueries(input.value);
-      if (!queries.length || !graphDiv || !graphDiv.data) return;
-
-      var matchedNames = {};
-
-      var nTraces = graphDiv.data.length;
-      for (var ti = 0; ti < nTraces; ti++) {
-        var trace = graphDiv.data[ti];
-        var texts = trace.text || [];
-        var n     = texts.length;
-        var widths    = new Array(n);
-        var colors    = new Array(n);
-        var opacities = new Array(n);
-
-        for (var i = 0; i < n; i++) {
-          var tname = (texts[i] || '').toUpperCase();
-          if (isMatch(tname, queries)) {
-            widths[i]    = 4;
-            colors[i]    = '#FF3333';
-            opacities[i] = 1.0;
-            matchedNames[tname] = true;
-          } else {
-            widths[i]    = 0.5;
-            colors[i]    = currentTheme() === 'dark' ? 'rgba(255,255,255,0.15)' : 'rgba(0,0,0,0.1)';
-            opacities[i] = 0.35;
+          for (var i = 0; i < n; i++) {
+            var tname = (texts[i] || '').toUpperCase();
+            if (isMatch(tname, queries)) {
+              widths[i] = 4;
+              colors[i] = '#FF3333';
+              opacities[i] = 1.0;
+              matchedNames[tname] = true;
+            } else {
+              widths[i] = 0.5;
+              colors[i] = currentTheme() === 'dark' ? 'rgba(255,255,255,0.15)' : 'rgba(0,0,0,0.1)';
+              opacities[i] = 0.35;
+            }
           }
+
+          Plotly.restyle(graphDiv, {
+            'marker.line.width': [widths],
+            'marker.line.color': [colors],
+            'marker.opacity': [opacities]
+          }, [ti]);
         }
 
-        Plotly.restyle(graphDiv, {
-          'marker.line.width': [widths],
-          'marker.line.color': [colors],
-          'marker.opacity':    [opacities]
-        }, [ti]);
+        var matchedRows = [];
+        var keys = Object.keys(matchedNames);
+        for (var k = 0; k < keys.length; k++) {
+          var info = TEAM_DATA[keys[k]];
+          if (info) matchedRows.push(info);
+        }
+        renderInfoTable(matchedRows);
       }
 
-      var matchedRows = [];
-      var keys = Object.keys(matchedNames);
-      for (var k = 0; k < keys.length; k++) {
-        var info = TEAM_DATA[keys[k]];
-        if (info) matchedRows.push(info);
+      function renderInfoTable(rows) {
+        if (!rows.length) {
+          infoPanel.innerHTML = '';
+          return;
+        }
+        rows.sort(function (a, b) { return (b.elo || 0) - (a.elo || 0); });
+        var html = '<table><thead><tr>'
+          + '<th>Team</th><th>Elo</th><th>SoS</th><th>Driver Skills</th><th>Programming Skills</th>'
+          + '</tr></thead><tbody>';
+        for (var i = 0; i < rows.length; i++) {
+          var r = rows[i];
+          html += '<tr>'
+            + '<td style="font-weight:600;color:var(--text-link)">' + r.team + '</td>'
+            + '<td>' + r.elo.toFixed(1) + '</td>'
+            + '<td>' + r.sos.toFixed(4) + '</td>'
+            + '<td>' + r.driver + '</td>'
+            + '<td>' + r.prog + '</td>'
+            + '</tr>';
+        }
+        html += '</tbody></table>';
+        infoPanel.innerHTML = html;
       }
-      renderInfoTable(matchedRows);
-    }
 
-    function renderInfoTable(rows) {
-      if (!rows.length) {
+      function clearHighlight() {
+        if (!graphDiv || !graphDiv.data) return;
+        var isDark = currentTheme() === 'dark';
+        var nTraces = graphDiv.data.length;
+        for (var ti = 0; ti < nTraces; ti++) {
+          var trace = graphDiv.data[ti];
+          var n = (trace.text || []).length;
+          var widths = new Array(n);
+          var colors = new Array(n);
+          var opacities = new Array(n);
+          for (var i = 0; i < n; i++) {
+            widths[i] = 0.5;
+            colors[i] = ti === 0
+              ? (isDark ? 'rgba(255,255,255,0.25)' : 'rgba(0,0,0,0.15)')
+              : (isDark ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.08)');
+            opacities[i] = ti === 0 ? 0.82 : 0.7;
+          }
+          Plotly.restyle(graphDiv, {
+            'marker.line.width': [widths],
+            'marker.line.color': [colors],
+            'marker.opacity': [opacities]
+          }, [ti]);
+        }
+        input.value = '';
         infoPanel.innerHTML = '';
-        return;
       }
-      rows.sort(function(a, b) { return (b.elo || 0) - (a.elo || 0); });
-      var html = '<table><thead><tr>'
-        + '<th>Team</th><th>Elo</th><th>SoS</th><th>Driver Skills</th><th>Programming Skills</th>'
-        + '</tr></thead><tbody>';
-      for (var i = 0; i < rows.length; i++) {
-        var r = rows[i];
-        html += '<tr>'
-          + '<td style="font-weight:600;color:var(--text-link)">' + r.team + '</td>'
-          + '<td>' + r.elo.toFixed(1) + '</td>'
-          + '<td>' + r.sos.toFixed(4) + '</td>'
-          + '<td>' + r.driver + '</td>'
-          + '<td>' + r.prog + '</td>'
-          + '</tr>';
-      }
-      html += '</tbody></table>';
-      infoPanel.innerHTML = html;
-    }
 
-    function clearHighlight() {
-      if (!graphDiv || !graphDiv.data) return;
-      var isDark = currentTheme() === 'dark';
-      var nTraces = graphDiv.data.length;
-      for (var ti = 0; ti < nTraces; ti++) {
-        var trace = graphDiv.data[ti];
-        var n = (trace.text || []).length;
-        var widths    = new Array(n);
-        var colors    = new Array(n);
-        var opacities = new Array(n);
-        for (var i = 0; i < n; i++) {
-          widths[i]    = 0.5;
-          colors[i]    = ti === 0
-            ? (isDark ? 'rgba(255,255,255,0.25)' : 'rgba(0,0,0,0.15)')
-            : (isDark ? 'rgba(255,255,255,0.1)'  : 'rgba(0,0,0,0.08)');
-          opacities[i] = ti === 0 ? 0.82 : 0.7;
-        }
-        Plotly.restyle(graphDiv, {
-          'marker.line.width': [widths],
-          'marker.line.color': [colors],
-          'marker.opacity':    [opacities]
-        }, [ti]);
-      }
-      input.value = '';
-      infoPanel.innerHTML = '';
-    }
-
-    btnSearch.addEventListener('click', highlightTeam);
-    btnClear.addEventListener('click', clearHighlight);
-    input.addEventListener('keydown', function(e) {
-      if (e.key === 'Enter') highlightTeam();
-    });
-  })();
+      btnSearch.addEventListener('click', highlightTeam);
+      btnClear.addEventListener('click', clearHighlight);
+      input.addEventListener('keydown', function (e) {
+        if (e.key === 'Enter') highlightTeam();
+      });
+    })();
   </script>
 </body>
+
 </html>
