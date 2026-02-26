@@ -101,7 +101,49 @@ python app.py
 
 ---
 
-## 📄 License
+## � 每年赛季更新指南
+
+每年新赛季开始时，需要修改以下位置的年份数字，项目即可自动抓取新赛季数据。
+
+### 需要修改的文件一览
+
+| #   | 文件              | 位置                                                                    | 当前值                        | 说明                                                                |
+| --- | ----------------- | ----------------------------------------------------------------------- | ----------------------------- | ------------------------------------------------------------------- |
+| 1   | `data_fetcher.py` | `run_once()` 函数（约 L966）                                            | `get_vurc_season_id(2025)`    | **最关键**：决定抓取哪个赛季的数据。改为新赛季的起始年份，如 `2026` |
+| 2   | `data_fetcher.py` | `generate_interactive_html()` 中的 `<title>` 和 `<h1>`（约 L479、L633） | `VURC 2025-2026`              | 网页标题和页面大标题的显示文字                                      |
+| 3   | `data_fetcher.py` | `generate_interactive_html()` 中的两处 `chartTitle`（约 L668、L684）    | `---VURC--- 2025-2026`        | 图表标题（中英文各一处）                                            |
+| 4   | `app.py`          | `dash.Dash(title=...)`（L45）                                           | `VURC 2025-2026 战绩看板`     | Dash 本地看板浏览器标签标题                                         |
+| 5   | `app.py`          | 页面 H2 标题（L67）                                                     | `VURC 2025-2026 实时战绩看板` | Dash 本地看板页面标题                                               |
+| 6   | `app.py`          | 图表标题（L289）                                                        | `---VURC--- 2025-2026`        | Dash 本地看板图表标题                                               |
+
+> **快速操作**：在编辑器中全局搜索 `2025-2026`，替换为新赛季年份（如 `2026-2027`）即可覆盖大部分位置。  
+> 另外记得把 `data_fetcher.py` 中 `get_vurc_season_id(2025)` 的参数 `2025` 改为 `2026`。
+
+### 网页端（GitHub Actions 自动部署）
+
+只需修改仓库中的源码文件，推送到 GitHub 后 Actions 会自动运行并更新 `rankings/index.html`：
+
+1. **修改 `data_fetcher.py`**：将 `run_once()` 中的年份参数改为新赛季年份
+2. **修改标题文字**（可选但建议）：全局替换 `2025-2026` → 新赛季年份
+3. 推送代码，GitHub Actions 会在 30 分钟内自动生成新赛季的排名页面
+
+### 本地端
+
+1. 同样修改上述文件中的年份
+2. 重新运行 `python data_fetcher.py` 抓取新赛季数据
+3. 如需本地看板，运行 `python app.py`
+
+### API Token 是否需要定期更新？
+
+- **RobotEvents API Token 不会过期**，一旦申请后可以长期使用，无需每年更新
+- Token 存储位置：
+  - **GitHub Actions**：仓库 Settings → Secrets → `ROBOTEVENTS_TOKEN`
+  - **本地**：项目根目录 `.env` 文件中的 `ROBOTEVENTS_TOKEN=...`
+- 如果 Token 失效（如账号变更或被 revoke），前往 [RobotEvents API](https://www.robotevents.com/api/v2) 重新申请即可
+
+---
+
+## �📄 License
 
 MIT
 

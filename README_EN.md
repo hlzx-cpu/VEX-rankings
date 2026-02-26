@@ -101,6 +101,48 @@ python app.py
 
 ---
 
-## 📄 License
+## � Yearly Season Update Guide
+
+When a new season starts, update the year numbers in the following locations. The project will then automatically fetch the new season's data.
+
+### Files to Update
+
+| #   | File              | Location                                                          | Current Value                 | Notes                                                                                                   |
+| --- | ----------------- | ----------------------------------------------------------------- | ----------------------------- | ------------------------------------------------------------------------------------------------------- |
+| 1   | `data_fetcher.py` | `run_once()` (~L966)                                              | `get_vurc_season_id(2025)`    | **Most critical**: determines which season to fetch. Change to the new season's start year, e.g. `2026` |
+| 2   | `data_fetcher.py` | `<title>` & `<h1>` in `generate_interactive_html()` (~L479, L633) | `VURC 2025-2026`              | Page title and heading text                                                                             |
+| 3   | `data_fetcher.py` | Two `chartTitle` entries (~L668, L684)                            | `---VURC--- 2025-2026`        | Chart title (English & Chinese)                                                                         |
+| 4   | `app.py`          | `dash.Dash(title=...)` (L45)                                      | `VURC 2025-2026 战绩看板`     | Dash local dashboard browser tab title                                                                  |
+| 5   | `app.py`          | Page H2 heading (L67)                                             | `VURC 2025-2026 实时战绩看板` | Dash local dashboard page title                                                                         |
+| 6   | `app.py`          | Chart title (L289)                                                | `---VURC--- 2025-2026`        | Dash local dashboard chart title                                                                        |
+
+> **Quick method**: Use your editor's global search-and-replace to change `2025-2026` → new season (e.g. `2026-2027`).  
+> Also change the `2025` parameter in `get_vurc_season_id(2025)` to `2026`.
+
+### Web (GitHub Actions auto-deployment)
+
+Just edit the source files and push to GitHub — Actions will automatically regenerate `rankings/index.html`:
+
+1. **Edit `data_fetcher.py`**: Change the year parameter in `run_once()`
+2. **Update title text** (optional but recommended): global replace `2025-2026` → new season
+3. Push the code; GitHub Actions will generate the new season's rankings within 30 minutes
+
+### Local
+
+1. Make the same year changes in the files listed above
+2. Re-run `python data_fetcher.py` to fetch new season data
+3. Optionally run `python app.py` for the local dashboard
+
+### Does the API Token need regular renewal?
+
+- **RobotEvents API Tokens do not expire** — once issued, they work indefinitely; no yearly renewal needed
+- Token storage locations:
+  - **GitHub Actions**: Repository Settings → Secrets → `ROBOTEVENTS_TOKEN`
+  - **Local**: `.env` file in the project root (`ROBOTEVENTS_TOKEN=...`)
+- If the token stops working (e.g. account change or revocation), apply for a new one at [RobotEvents API](https://www.robotevents.com/api/v2)
+
+---
+
+## �📄 License
 
 MIT
