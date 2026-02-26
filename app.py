@@ -28,6 +28,8 @@ VURC 2025-2026 实时战绩分析 Web 看板（Dash 前端）
     ROBOTEVENTS_TOKEN=你的Token
 """
 
+import threading
+import webbrowser
 from pathlib import Path
 
 import dash
@@ -178,7 +180,7 @@ def render_chart(records, selected_teams):
 
     # ── 1) 有 skills 的队伍：半径 ∝ √(programming_skills)
     if not has_skills.empty:
-        bubble_size = np.sqrt(has_skills["programming_skills"].values) * 4
+        bubble_size = np.sqrt(has_skills["programming_skills"].values) * 2
 
         # 高亮选中队伍：加粗边框
         if selected:
@@ -241,7 +243,7 @@ def render_chart(records, selected_teams):
             textposition="top center",
             textfont=dict(size=9, color="#333333"),
             marker=dict(
-                size=6,
+                size=3,
                 color="#BBBBBB",
                 symbol="circle",
                 line=dict(width=border_width_ns, color=border_color_ns),
@@ -383,4 +385,5 @@ if __name__ == "__main__":
     print("  访问: http://localhost:8050")
     print("  图表每 30 秒自动刷新 dashboard_data.csv")
     print("=" * 55)
+    threading.Timer(1.5, lambda: webbrowser.open("http://localhost:8050")).start()
     app.run(debug=False, host="0.0.0.0", port=8050)

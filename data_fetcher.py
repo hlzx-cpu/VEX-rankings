@@ -23,7 +23,9 @@ import time
 from collections import defaultdict
 from pathlib import Path
 
+import numpy as np
 import pandas as pd
+import plotly.graph_objects as go
 import requests
 from dotenv import load_dotenv
 
@@ -324,6 +326,396 @@ def compute_elo_sos(matches_df: pd.DataFrame, all_teams: list[str]) -> pd.DataFr
     return pd.DataFrame(records)
 
 
+# ─── 静态 HTML 输出 ─────────────────────────────────────────────────────────────
+RANKINGS_DIR = Path(__file__).parent / "rankings"
+
+
+def generate_interactive_html(df: pd.DataFrame) -> None:
+    """
+    根据 DataFrame 生成一个带原生 JS 交互的单文件 HTML（暗黑主题）。
+    输出到 rankings/index.html，可直接部署到 GitHub Pages。
+    """
+    RANKINGS_DIR.mkdir(exist_ok=True)
+
+    has_skills = df[df["programming_skills"] > 0].copy()
+    no_skills  = df[df["programming_skills"] == 0].copy()
+
+    fig = go.Figure()
+
+    # ── 1) 有 skills 的队伍
+    if not has_skills.empty:
+        bubble_size = np.sqrt(has_skills["programming_skills"].values) * 2
+        fig.add_trace(go.Scatter(
+            x=has_skills["strength_of_schedule"],
+            y=has_skills["elo"],
+            mode="markers+text",
+            text=has_skills["team_name"],
+            textposition="top center",
+            textfont=dict(size=9, color="#c9d1d9"),
+            marker=dict(
+                size=bubble_size,
+                color=has_skills["driver_skills"],
+                colorscale="Plasma",
+                colorbar=dict(
+                    title=dict(text="driver_skills", side="top", font=dict(color="#c9d1d9")),
+                    tickvals=[0, 20, 40, 60, 80, 100, 120, 140],
+                    tickfont=dict(color="#8b949e"),
+                    x=1.01, xanchor="left", yanchor="middle", y=0.5,
+                    len=0.75, thickness=16,
+                ),
+                line=dict(width=0.5, color="rgba(255,255,255,0.25)"),
+                opacity=0.82,
+                showscale=True,
+            ),
+            hovertemplate=(
+                "<b>%{text}</b><br>"
+                "SoS: %{x:.4f}<br>"
+                "Elo: %{y:.1f}<br>"
+                "Driver: %{customdata[0]}<br>"
+                "Programming: %{customdata[1]}"
+                "<extra></extra>"
+            ),
+            customdata=has_skills[["driver_skills", "programming_skills"]].values,
+            name="有 Skills 数据",
+        ))
+
+    # ── 2) 无 skills 的队伍
+    if not no_skills.empty:
+        fig.add_trace(go.Scatter(
+            x=no_skills["strength_of_schedule"],
+            y=no_skills["elo"],
+            mode="markers+text",
+            text=no_skills["team_name"],
+            textposition="top center",
+            textfont=dict(size=9, color="#8b949e"),
+            marker=dict(
+                size=3,
+                color="#484f58",
+                symbol="circle",
+                opacity=0.7,
+                line=dict(width=0.5, color="rgba(255,255,255,0.1)"),
+            ),
+            hovertemplate=(
+                "<b>%{text}</b><br>"
+                "SoS: %{x:.4f}<br>"
+                "Elo: %{y:.1f}<br>"
+                "Skills: 无数据"
+                "<extra></extra>"
+            ),
+            name="无 Skills 数据",
+            showlegend=False,
+        ))
+
+    # ── 坐标轴
+    fig.update_xaxes(
+        title_text="strength_of_schedule",
+        range=[0.28, 0.82], dtick=0.05,
+        showgrid=True, gridcolor="#21262d", gridwidth=1,
+        zeroline=False, showline=False,
+        tickformat=".2f",
+        tickfont=dict(color="#8b949e"),
+        title_font=dict(color="#c9d1d9"),
+    )
+    elo_min = df["elo"].min()
+    elo_max = df["elo"].max()
+    elo_pad = max((elo_max - elo_min) * 0.05, 10)
+    fig.update_yaxes(
+        title_text="elo",
+        range=[elo_min - elo_pad, elo_max + elo_pad], dtick=50,
+        showgrid=True, gridcolor="#21262d", gridwidth=1,
+        zeroline=False, showline=False,
+        tickfont=dict(color="#8b949e"),
+        title_font=dict(color="#c9d1d9"),
+    )
+
+    # ── 全局布局（暗黑主题）
+    fig.update_layout(
+        title=dict(
+            text=(
+                "Elo vs Strength of Schedule, Skills Scores "
+                "(Driver = Color, Programming = Size) ---VURC--- 2025-2026"
+            ),
+            x=0, xanchor="left", font=dict(size=13, color="#e6edf3"),
+        ),
+        paper_bgcolor="#0d1117",
+        plot_bgcolor="#161b22",
+        height=800,
+        margin=dict(l=60, r=130, t=55, b=55),
+        font=dict(family="'Segoe UI', Arial, sans-serif", color="#c9d1d9"),
+        showlegend=False,
+    )
+
+    # ── 将队伍数据导出为 JSON，供 JS 端检索（不依赖 Plotly 内部数据结构）
+    team_lookup = {}
+    for _, row in df.iterrows():
+        team_lookup[row["team_name"].upper()] = {
+            "team": row["team_name"],
+            "elo": round(float(row["elo"]), 1),
+            "sos": round(float(row["strength_of_schedule"]), 4),
+            "driver": int(row["driver_skills"]),
+            "prog": int(row["programming_skills"]),
+        }
+    import json
+    team_json = json.dumps(team_lookup, ensure_ascii=False)
+
+    # ── 导出 HTML 片段
+    plot_html = fig.to_html(
+        full_html=False,
+        include_plotlyjs="cdn",
+        div_id="vurc-plot",
+    )
+
+    # ── 构建完整 HTML 页面
+    html_template = f"""<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>VURC 2025-2026 Rankings</title>
+  <style>
+    *, *::before, *::after {{ box-sizing: border-box; margin: 0; padding: 0; }}
+    body {{
+      background: #0d1117;
+      color: #c9d1d9;
+      font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
+      min-height: 100vh;
+    }}
+    .toolbar {{
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 14px 24px;
+      background: #161b22;
+      border-bottom: 1px solid #30363d;
+      flex-wrap: wrap;
+    }}
+    .toolbar h1 {{
+      font-size: 18px;
+      font-weight: 600;
+      color: #e6edf3;
+      margin-right: auto;
+      white-space: nowrap;
+    }}
+    .toolbar input[type="text"] {{
+      background: #0d1117;
+      border: 1px solid #30363d;
+      border-radius: 6px;
+      color: #c9d1d9;
+      padding: 6px 12px;
+      font-size: 14px;
+      width: 220px;
+      outline: none;
+      transition: border-color 0.2s;
+    }}
+    .toolbar input[type="text"]:focus {{
+      border-color: #58a6ff;
+    }}
+    .toolbar input[type="text"]::placeholder {{
+      color: #484f58;
+    }}
+    .btn {{
+      padding: 6px 16px;
+      font-size: 13px;
+      font-weight: 500;
+      border: 1px solid #30363d;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: background 0.15s, border-color 0.15s;
+    }}
+    .btn-primary {{
+      background: #238636;
+      color: #ffffff;
+      border-color: #238636;
+    }}
+    .btn-primary:hover {{ background: #2ea043; }}
+    .btn-secondary {{
+      background: #21262d;
+      color: #c9d1d9;
+    }}
+    .btn-secondary:hover {{ background: #30363d; }}
+    #chart-container {{
+      padding: 8px 16px;
+    }}
+    /* ── 搜索结果信息表格 ── */
+    #info-panel {{
+      padding: 0 24px 12px 24px;
+    }}
+    #info-panel:empty {{ display: none; }}
+    #info-panel table {{
+      border-collapse: collapse;
+      width: auto;
+      min-width: 520px;
+      margin-top: 8px;
+      font-size: 13px;
+    }}
+    #info-panel th {{
+      background: #21262d;
+      color: #e6edf3;
+      padding: 6px 14px;
+      text-align: left;
+      border-bottom: 2px solid #30363d;
+      font-weight: 600;
+      white-space: nowrap;
+    }}
+    #info-panel td {{
+      padding: 5px 14px;
+      border-bottom: 1px solid #21262d;
+      color: #c9d1d9;
+      white-space: nowrap;
+    }}
+    #info-panel tr:hover td {{
+      background: #1c2128;
+    }}
+  </style>
+</head>
+<body>
+  <div class="toolbar">
+    <h1>VURC 2025-2026 Rankings</h1>
+    <input type="text" id="team-input" placeholder="e.g.  SJTU1/SJTU2" />
+    <button class="btn btn-primary" id="btn-search">🔍 Highlight</button>
+    <button class="btn btn-secondary" id="btn-clear">✕ Clear</button>
+  </div>
+  <div id="info-panel"></div>
+  <div id="chart-container">
+    {plot_html}
+  </div>
+
+  <script>
+  var TEAM_DATA = {team_json};
+  (function() {{
+    var graphDiv  = document.getElementById('vurc-plot');
+    var input     = document.getElementById('team-input');
+    var btnSearch = document.getElementById('btn-search');
+    var btnClear  = document.getElementById('btn-clear');
+    var infoPanel = document.getElementById('info-panel');
+
+    /* ── 解析输入：按 / 分割为多个关键词 ── */
+    function parseQueries(raw) {{
+      return raw.split('/').map(function(s) {{ return s.trim().toUpperCase(); }})
+                .filter(function(s) {{ return s.length > 0; }});
+    }}
+
+    /* ── 判断某个队名是否匹配任一关键词 ── */
+    function isMatch(name, queries) {{
+      for (var q = 0; q < queries.length; q++) {{
+        if (name.indexOf(queries[q]) !== -1) return true;
+      }}
+      return false;
+    }}
+
+    /* ── 搜索 & 高亮 ── */
+    function highlightTeam() {{
+      var queries = parseQueries(input.value);
+      if (!queries.length || !graphDiv || !graphDiv.data) return;
+
+      var matchedNames = {{}};  // 去重记录
+
+      var nTraces = graphDiv.data.length;
+      for (var ti = 0; ti < nTraces; ti++) {{
+        var trace = graphDiv.data[ti];
+        var texts = trace.text || [];
+        var n     = texts.length;
+        var widths    = new Array(n);
+        var colors    = new Array(n);
+        var opacities = new Array(n);
+
+        for (var i = 0; i < n; i++) {{
+          var tname = (texts[i] || '').toUpperCase();
+          if (isMatch(tname, queries)) {{
+            widths[i]    = 4;
+            colors[i]    = '#FF3333';
+            opacities[i] = 1.0;
+            matchedNames[tname] = true;
+          }} else {{
+            widths[i]    = 0.5;
+            colors[i]    = 'rgba(255,255,255,0.15)';
+            opacities[i] = 0.35;
+          }}
+        }}
+
+        Plotly.restyle(graphDiv, {{
+          'marker.line.width': [widths],
+          'marker.line.color': [colors],
+          'marker.opacity':    [opacities]
+        }}, [ti]);
+      }}
+
+      // 从预嵌入的 TEAM_DATA 查找信息
+      var matchedRows = [];
+      var keys = Object.keys(matchedNames);
+      for (var k = 0; k < keys.length; k++) {{
+        var info = TEAM_DATA[keys[k]];
+        if (info) matchedRows.push(info);
+      }}
+      renderInfoTable(matchedRows);
+    }}
+
+    /* ── 渲染搜索结果表格 ── */
+    function renderInfoTable(rows) {{
+      if (!rows.length) {{
+        infoPanel.innerHTML = '';
+        return;
+      }}
+      rows.sort(function(a, b) {{ return (b.elo || 0) - (a.elo || 0); }});
+      var html = '<table><thead><tr>'
+        + '<th>Team</th><th>Elo</th><th>SoS</th><th>Driver Skills</th><th>Prog Skills</th>'
+        + '</tr></thead><tbody>';
+      for (var i = 0; i < rows.length; i++) {{
+        var r = rows[i];
+        html += '<tr>'
+          + '<td style="font-weight:600;color:#58a6ff">' + r.team + '</td>'
+          + '<td>' + r.elo.toFixed(1) + '</td>'
+          + '<td>' + r.sos.toFixed(4) + '</td>'
+          + '<td>' + r.driver + '</td>'
+          + '<td>' + r.prog + '</td>'
+          + '</tr>';
+      }}
+      html += '</tbody></table>';
+      infoPanel.innerHTML = html;
+    }}
+
+    /* ── 清除高亮 & 表格 ── */
+    function clearHighlight() {{
+      if (!graphDiv || !graphDiv.data) return;
+      var nTraces = graphDiv.data.length;
+      for (var ti = 0; ti < nTraces; ti++) {{
+        var trace = graphDiv.data[ti];
+        var n = (trace.text || []).length;
+        var widths    = new Array(n);
+        var colors    = new Array(n);
+        var opacities = new Array(n);
+        for (var i = 0; i < n; i++) {{
+          widths[i]    = 0.5;
+          colors[i]    = ti === 0 ? 'rgba(255,255,255,0.25)' : 'rgba(255,255,255,0.1)';
+          opacities[i] = ti === 0 ? 0.82 : 0.7;
+        }}
+        Plotly.restyle(graphDiv, {{
+          'marker.line.width': [widths],
+          'marker.line.color': [colors],
+          'marker.opacity':    [opacities]
+        }}, [ti]);
+      }}
+      input.value = '';
+      infoPanel.innerHTML = '';
+    }}
+
+    btnSearch.addEventListener('click', highlightTeam);
+    btnClear.addEventListener('click', clearHighlight);
+    input.addEventListener('keydown', function(e) {{
+      if (e.key === 'Enter') highlightTeam();
+    }});
+  }})();
+  </script>
+</body>
+</html>
+"""
+
+    out_path = RANKINGS_DIR / "index.html"
+    with open(out_path, "w", encoding="utf-8") as f:
+        f.write(html_template)
+    log.info("✓ 生成交互式 HTML: %s", out_path)
+
+
 # ─── 主函数 ──────────────────────────────────────────────────────────────────────
 def run_once() -> None:
     """执行一次完整的数据拉取、计算、输出流程。"""
@@ -375,6 +767,10 @@ def run_once() -> None:
 
     df.to_csv(OUTPUT_CSV, index=False, encoding="utf-8")
     log.info("✓ 写入 %s (%d 支队伍)", OUTPUT_CSV, len(df))
+
+    # 生成静态交互式 HTML（用于 GitHub Pages 部署）
+    generate_interactive_html(df)
+
     log.info("═══ 数据更新完成 ═══")
 
 

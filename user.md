@@ -4,7 +4,7 @@
 
 ### 1. 安装依赖（仅首次）
 ```powershell
-cd e:\SJTU\VEX\pythons
+cd e:\SJTU\VEX\VEX-rankings
 pip install -r requirements.txt
 ```
 
@@ -95,3 +95,5 @@ A: 使用标准 Elo 算法，初始值 1500，K 因子 32。每场比赛根据�
 
 **Q: Skills 分数取的是什么？**
 A: 每支队伍在该赛季所有赛事中的 **最高** Driver Skills 和 Programming Skills 分数。
+
+
