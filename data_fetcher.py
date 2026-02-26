@@ -17,6 +17,7 @@ data_fetcher.py
 """
 
 import argparse
+import datetime
 import logging
 import os
 import time
@@ -357,7 +358,7 @@ def generate_interactive_html(df: pd.DataFrame) -> None:
                 color=has_skills["driver_skills"],
                 colorscale="Plasma",
                 colorbar=dict(
-                    title=dict(text="driver_skills", side="top", font=dict(color="#c9d1d9")),
+                    title=dict(text="Driver Skills", side="top", font=dict(color="#c9d1d9")),
                     tickvals=[0, 20, 40, 60, 80, 100, 120, 140],
                     tickfont=dict(color="#8b949e"),
                     x=1.01, xanchor="left", yanchor="middle", y=0.5,
@@ -408,7 +409,7 @@ def generate_interactive_html(df: pd.DataFrame) -> None:
 
     # ── 坐标轴
     fig.update_xaxes(
-        title_text="strength_of_schedule",
+        title_text="Strength of Schedule",
         range=[0.28, 0.82], dtick=0.05,
         showgrid=True, gridcolor="#21262d", gridwidth=1,
         zeroline=False, showline=False,
@@ -420,7 +421,7 @@ def generate_interactive_html(df: pd.DataFrame) -> None:
     elo_max = df["elo"].max()
     elo_pad = max((elo_max - elo_min) * 0.05, 10)
     fig.update_yaxes(
-        title_text="elo",
+        title_text="Elo",
         range=[elo_min - elo_pad, elo_max + elo_pad], dtick=50,
         showgrid=True, gridcolor="#21262d", gridwidth=1,
         zeroline=False, showline=False,
@@ -432,8 +433,8 @@ def generate_interactive_html(df: pd.DataFrame) -> None:
     fig.update_layout(
         title=dict(
             text=(
-                "Elo vs Strength of Schedule, Skills Scores "
-                "(Driver = Color, Programming = Size) ---VURC--- 2025-2026"
+                "Elo vs Strength of Schedule vs Skills Scores "
+                "(Color = Driver, Size = Programming) ---VURC--- 2025-2026"
             ),
             x=0, xanchor="left", font=dict(size=13, color="#e6edf3"),
         ),
@@ -458,6 +459,10 @@ def generate_interactive_html(df: pd.DataFrame) -> None:
     import json
     team_json = json.dumps(team_lookup, ensure_ascii=False)
 
+    # ── 生成 UTC+8 时间戳
+    utc8 = datetime.timezone(datetime.timedelta(hours=8))
+    update_time = datetime.datetime.now(utc8).strftime("%Y-%m-%d %H:%M:%S")
+
     # ── 导出 HTML 片段
     plot_html = fig.to_html(
         full_html=False,
@@ -467,7 +472,7 @@ def generate_interactive_html(df: pd.DataFrame) -> None:
 
     # ── 构建完整 HTML 页面
     html_template = f"""<!DOCTYPE html>
-<html lang="en" data-theme="dark">
+<html lang="en" data-theme="dark" data-lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -488,12 +493,8 @@ def generate_interactive_html(df: pd.DataFrame) -> None:
       --bg-table-th:  #21262d;
       --bg-table-hover: #1c2128;
       --border-table: #21262d;
-      --plot-paper:   #0d1117;
-      --plot-bg:      #161b22;
-      --plot-grid:    #21262d;
       --btn-sec-bg:   #21262d;
       --btn-sec-hover:#30363d;
-      --toggle-icon:  '☀️';
     }}
 
     /* ── CSS 变量：浅色主题 ── */
@@ -509,12 +510,8 @@ def generate_interactive_html(df: pd.DataFrame) -> None:
       --bg-table-th:  #f6f8fa;
       --bg-table-hover: #f0f3f6;
       --border-table: #d8dee4;
-      --plot-paper:   #ffffff;
-      --plot-bg:      #f6f8fa;
-      --plot-grid:    #d0d7de;
       --btn-sec-bg:   #f3f4f6;
       --btn-sec-hover:#e5e7eb;
-      --toggle-icon:  '🌙';
     }}
 
     body {{
@@ -527,7 +524,7 @@ def generate_interactive_html(df: pd.DataFrame) -> None:
     .toolbar {{
       display: flex;
       align-items: center;
-      gap: 12px;
+      gap: 10px;
       padding: 14px 24px;
       background: var(--bg-toolbar);
       border-bottom: 1px solid var(--border);
@@ -559,7 +556,7 @@ def generate_interactive_html(df: pd.DataFrame) -> None:
       color: var(--text-dim);
     }}
     .btn {{
-      padding: 6px 16px;
+      padding: 6px 14px;
       font-size: 13px;
       font-weight: 500;
       border: 1px solid var(--border);
@@ -581,15 +578,25 @@ def generate_interactive_html(df: pd.DataFrame) -> None:
     .btn-toggle {{
       background: var(--btn-sec-bg);
       color: var(--text);
-      font-size: 16px;
-      padding: 5px 12px;
+      font-size: 15px;
+      padding: 5px 10px;
       line-height: 1;
     }}
     .btn-toggle:hover {{ background: var(--btn-sec-hover); }}
+    .status-bar {{
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      padding: 6px 24px;
+      font-size: 12px;
+      color: var(--text-dim);
+      background: var(--bg-toolbar);
+      border-bottom: 1px solid var(--border);
+      transition: background 0.25s, color 0.25s;
+    }}
     #chart-container {{
       padding: 8px 16px;
     }}
-    /* ── 搜索结果信息表格 ── */
     #info-panel {{
       padding: 0 24px 12px 24px;
     }}
@@ -625,9 +632,13 @@ def generate_interactive_html(df: pd.DataFrame) -> None:
   <div class="toolbar">
     <h1>VURC 2025-2026 Rankings</h1>
     <input type="text" id="team-input" placeholder="e.g.  SJTU1/SJTU2" />
-    <button class="btn btn-primary" id="btn-search">🔍 Highlight</button>
-    <button class="btn btn-secondary" id="btn-clear">✕ Clear</button>
+    <button class="btn btn-primary" id="btn-search" data-i18n="search">🔍 Highlight</button>
+    <button class="btn btn-secondary" id="btn-clear" data-i18n="clear">✕ Clear</button>
     <button class="btn btn-toggle" id="btn-theme" title="Toggle light/dark mode">☀️</button>
+    <button class="btn btn-toggle" id="btn-lang" title="Switch language">中</button>
+  </div>
+  <div class="status-bar">
+    <span id="update-label" data-i18n="updated">Last updated: {update_time} (UTC+8) \u00b7 Auto-refresh every 30 min</span>
   </div>
   <div id="info-panel"></div>
   <div id="chart-container">
@@ -636,15 +647,93 @@ def generate_interactive_html(df: pd.DataFrame) -> None:
 
   <script>
   var TEAM_DATA = {team_json};
+  var UPDATE_TIME = '{update_time}';
   (function() {{
     var graphDiv  = document.getElementById('vurc-plot');
     var input     = document.getElementById('team-input');
     var btnSearch = document.getElementById('btn-search');
     var btnClear  = document.getElementById('btn-clear');
     var btnTheme  = document.getElementById('btn-theme');
+    var btnLang   = document.getElementById('btn-lang');
     var infoPanel = document.getElementById('info-panel');
+    var updateLabel = document.getElementById('update-label');
 
-    /* ═══════════════ 主题切换 ═══════════════ */
+    /* \u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550 \u56fd\u9645\u5316 i18n \u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550 */
+    var i18n = {{
+      en: {{
+        search:   '🔍 Highlight',
+        clear:    '✕ Clear',
+        updated:  'Last updated: ' + UPDATE_TIME + ' (UTC+8) · Auto-refresh every 30 min',
+        placeholder: 'e.g.  SJTU1/SJTU2',
+        chartTitle: 'Elo vs Strength of Schedule vs Skills Scores (Color = Driver, Size = Programming) ---VURC--- 2025-2026',
+        xTitle:     'Strength of Schedule',
+        yTitle:     'Elo',
+        cbTitle:    'Driver Skills',
+        thTeam:     'Team',
+        thElo:      'Elo',
+        thSos:      'SoS',
+        thDriver:   'Driver Skills',
+        thProg:     'Prog Skills',
+        langBtn:    '中'
+      }},
+      zh: {{
+        search:   '🔍 搜索',
+        clear:    '✕ 清除',
+        updated:  '最后更新时间：' + UPDATE_TIME + '（北京时间）· 每 30 分钟刷新一次',
+        placeholder: '例如  SJTU1/SJTU2',
+        chartTitle: 'Elo vs 赛程强度 vs 技能赛分数（颜色 = 手动，大小 = 自动）---VURC--- 2025-2026',
+        xTitle:     '赛程强度',
+        yTitle:     'Elo',
+        cbTitle:    '技能赛得分',
+        thTeam:     '队伍',
+        thElo:      'Elo',
+        thSos:      '赛程强度',
+        thDriver:   '手动技能分',
+        thProg:     '自动技能分',
+        langBtn:    'EN'
+      }}
+    }};
+
+    function currentLang() {{
+      return document.documentElement.getAttribute('data-lang') || 'en';
+    }}
+
+    function applyLang(lang) {{
+      var t = i18n[lang];
+      btnSearch.textContent = t.search;
+      btnClear.textContent  = t.clear;
+      updateLabel.textContent = t.updated;
+      input.placeholder     = t.placeholder;
+      btnLang.textContent   = t.langBtn;
+      document.documentElement.setAttribute('data-lang', lang);
+
+      // \u66f4\u65b0 Plotly \u5e03\u5c40\u6587\u5b57
+      if (graphDiv && graphDiv.data) {{
+        Plotly.relayout(graphDiv, {{
+          'title.text':              t.chartTitle,
+          'xaxis.title.text':        t.xTitle,
+          'yaxis.title.text':        t.yTitle
+        }});
+        // colorbar title
+        for (var ti = 0; ti < graphDiv.data.length; ti++) {{
+          if (graphDiv.data[ti].marker && graphDiv.data[ti].marker.colorbar) {{
+            Plotly.restyle(graphDiv, {{'marker.colorbar.title.text': t.cbTitle}}, [ti]);
+          }}
+        }}
+      }}
+
+      // \u5982\u679c\u8868\u683c\u5f53\u524d\u53ef\u89c1\uff0c\u91cd\u65b0\u6e32\u67d3\u8868\u5934
+      if (lastMatchedRows && lastMatchedRows.length) {{
+        renderInfoTable(lastMatchedRows);
+      }}
+    }}
+
+    btnLang.addEventListener('click', function() {{
+      var next = currentLang() === 'en' ? 'zh' : 'en';
+      applyLang(next);
+    }});
+
+    /* \u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550 \u4e3b\u9898\u5207\u6362 \u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550 */
     var themes = {{
       dark: {{
         paper_bgcolor: '#0d1117',
@@ -681,8 +770,6 @@ def generate_interactive_html(df: pd.DataFrame) -> None:
     function applyPlotlyTheme(t) {{
       if (!graphDiv || !graphDiv.data) return;
       var s = themes[t];
-
-      // 布局更新
       Plotly.relayout(graphDiv, {{
         'paper_bgcolor': s.paper_bgcolor,
         'plot_bgcolor':  s.plot_bgcolor,
@@ -695,13 +782,10 @@ def generate_interactive_html(df: pd.DataFrame) -> None:
         'title.font.color': s.titlecolor,
         'font.color': s.fontcolor
       }});
-
-      // 每个 trace 的文字和 colorbar 颜色
       for (var ti = 0; ti < graphDiv.data.length; ti++) {{
         var update = {{
           'textfont.color': ti === 0 ? s.textcolor : s.textcolorDim
         }};
-        // 只对有 colorbar 的 trace 更新颜色
         if (graphDiv.data[ti].marker && graphDiv.data[ti].marker.colorbar) {{
           update['marker.colorbar.title.font.color'] = s.cbTitleColor;
           update['marker.colorbar.tickfont.color']    = s.cbTickColor;
@@ -717,7 +801,8 @@ def generate_interactive_html(df: pd.DataFrame) -> None:
       applyPlotlyTheme(next);
     }});
 
-    /* ═══════════════ 搜索逻辑 ═══════════════ */
+    /* \u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550 \u641c\u7d22\u903b\u8f91 \u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550 */
+    var lastMatchedRows = [];
 
     function parseQueries(raw) {{
       return raw.split('/').map(function(s) {{ return s.trim().toUpperCase(); }})
@@ -773,6 +858,7 @@ def generate_interactive_html(df: pd.DataFrame) -> None:
         var info = TEAM_DATA[keys[k]];
         if (info) matchedRows.push(info);
       }}
+      lastMatchedRows = matchedRows;
       renderInfoTable(matchedRows);
     }}
 
@@ -781,9 +867,11 @@ def generate_interactive_html(df: pd.DataFrame) -> None:
         infoPanel.innerHTML = '';
         return;
       }}
+      var t = i18n[currentLang()];
       rows.sort(function(a, b) {{ return (b.elo || 0) - (a.elo || 0); }});
       var html = '<table><thead><tr>'
-        + '<th>Team</th><th>Elo</th><th>SoS</th><th>Driver Skills</th><th>Programming Skills</th>'
+        + '<th>' + t.thTeam + '</th><th>' + t.thElo + '</th><th>' + t.thSos
+        + '</th><th>' + t.thDriver + '</th><th>' + t.thProg + '</th>'
         + '</tr></thead><tbody>';
       for (var i = 0; i < rows.length; i++) {{
         var r = rows[i];
@@ -824,6 +912,7 @@ def generate_interactive_html(df: pd.DataFrame) -> None:
       }}
       input.value = '';
       infoPanel.innerHTML = '';
+      lastMatchedRows = [];
     }}
 
     btnSearch.addEventListener('click', highlightTeam);
