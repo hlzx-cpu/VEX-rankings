@@ -1,148 +1,299 @@
-[中文](readme.md) | English
-
-# VURC 2025-2026 Season Live Rankings
-
-> **View Online** → [hlzx-cpu.github.io/VEX-rankings/rankings/](https://hlzx-cpu.github.io/VEX-rankings/rankings/)
-
-Automated live performance analytics for the VEX U (VURC) 2025-2026 season. Data is refreshed every 30 minutes via GitHub Actions — no local server required.
+<p align="center">
+  <img src="./icons/VEX Robotics 2C.svg" width="180" alt="VEX Logo" />
+</p>
+<h1 align="center">VEX-Rankings</h1>
+<p align="center">
+  <strong>🤖 Automated Live Elo Rankings for VEX U (VURC) 2025-2026 Season</strong>
+</p>
+<p align="center">
+  Serverless · GitHub Actions Auto-Update · Static GitHub Pages Hosting
+</p>
+<p align="center">
+  <strong>English</strong> | <a href="readme.md">中文</a>
+</p>
+<p align="center">
+  <a href="LICENSE"><img src="https://img.shields.io/badge/License-MIT-blue.svg" alt="MIT License" /></a>
+  <a href="https://github.com/hlzx-cpu/VEX-rankings/actions"><img src="https://img.shields.io/github/actions/workflow/status/hlzx-cpu/VEX-rankings/deploy.yml?label=Auto%20Update&logo=github" alt="GitHub Actions" /></a>
+  <a href="https://www.python.org/"><img src="https://img.shields.io/badge/Python-3.8+-3776AB?logo=python&logoColor=white" alt="Python" /></a>
+  <a href="https://plotly.com/"><img src="https://img.shields.io/badge/Plotly-Interactive-3F4F75?logo=plotly&logoColor=white" alt="Plotly" /></a>
+  <a href="https://hlzx-cpu.github.io/VEX-rankings/rankings/"><img src="https://img.shields.io/badge/Demo-GitHub%20Pages-222?logo=github&logoColor=white" alt="GitHub Pages" /></a>
+</p>
 
 ---
 
-## 📊 Features
+## 👀 Live Preview
 
-- **Multi-dimensional bubble chart**: Elo (Y), Strength of Schedule (X), Driver Skills (color), Programming Skills (bubble size)
-- **Team search & compare**: Use `/` to search multiple teams (e.g. `SJTU1/SJTU2`), highlighted on the chart with a detail table
-- **Dark / Light theme**: Toggle with one click in the top-right corner
-- **Fully static**: Hosted on GitHub Pages, no backend server, API token securely stored in GitHub Secrets
+> **🌐 View Online** → [hlzx-cpu.github.io/VEX-rankings/rankings/](https://hlzx-cpu.github.io/VEX-rankings/rankings/)
+>
+> Data refreshes every 30 minutes via GitHub Actions — no setup required.
+
+---
+
+## 🌟 Features
+
+- 📊 **Multi-dimensional bubble chart** — Elo (Y), SoS (X), Driver Skills (color), Programming Skills (bubble size) — all in one view
+- 🔍 **Team search & comparison** — Use `/` to search multiple teams (e.g. `SJTU1/SJTU2`), highlighted on chart with detail table
+- 🌗 **Dark / Light theme** — One-click toggle in the top-right corner
+- 🌐 **Bilingual (EN / 中文)** — Built-in language switcher
+- ⚡ **Zero server** — GitHub Pages static hosting, token securely stored in GitHub Secrets
 
 ---
 
 ## 📐 Algorithms
 
-### 1. Elo Rating (Y-axis)
+### 1️⃣ Elo Rating (Y-axis)
 
-Classic chess Elo — no Margin of Victory, preventing score inflation.
+Classic chess Elo — no Margin of Victory (MoV), preventing score inflation.
 
 - Initial Elo = **1500**, K-factor = **32**
-- Expected win probability:
+- Expected win probability & post-match update:
 
-$$E_A = \frac{1}{1 + 10^{(R_B - R_A)/400}}$$
+$$E_A = \frac{1}{1 + 10^{(R_B - R_A)/400}} \qquad R_A' = R_A + K(S_A - E_A)$$
 
-- Post-match update (S = 1 win / 0.5 draw / 0 loss):
+> All matches sorted globally by `started_at`, updated sequentially. $S$ = 1 win / 0.5 draw / 0 loss.
 
-$$R_A' = R_A + K(S_A - E_A)$$
+### 2️⃣ Strength of Schedule — SoS (X-axis)
 
-- All matches sorted globally by `started_at`, updated sequentially
+$$SoS_{raw} = \frac{1}{n}\sum_{i=1}^{n}Elo(\text{opponent}_i) \qquad SoS = 0.30 + \frac{SoS_{raw} - \min}{\max - \min} \times 0.50$$
 
-### 2. Strength of Schedule — SoS (X-axis)
+> Opponents recorded per match (duplicates retained), mean of final opponent Elo, then Min-Max normalized to $[0.30, 0.80]$.
 
-Measures average opponent strength:
+### 3️⃣ Skills Scores
 
-1. **Collect opponents**: Record all opponents per match (duplicates kept)
-2. **Mean Elo**:
+| Dimension              | Chart Mapping   | Meaning                              |
+| ---------------------- | --------------- | ------------------------------------ |
+| **Driver Skills**      | Color intensity | Season-best driver skills score      |
+| **Programming Skills** | Bubble size     | Season-best programming skills score |
 
-$$SoS_{raw} = \frac{1}{n}\sum_{i=1}^{n}Elo(opponent_i)$$
+### 4️⃣ Data Source
 
-3. **Normalize**: Min-Max to $[0.30,\;0.80]$
-
-$$SoS = 0.30 + \frac{SoS_{raw} - \min}{\max - \min} \times 0.50$$
-
-### 3. Skills Scores
-
-- **Driver Skills** (color): Season-best driver skills score
-- **Programming Skills** (bubble size): Season-best programming skills score
-
-### 4. Data Source
-
-All data fetched from the [RobotEvents API v2](https://www.robotevents.com/api/v2) — Teams, Matches, and Skills endpoints.
+All data fetched from [RobotEvents API v2](https://www.robotevents.com/api/v2) — Teams, Matches, and Skills endpoints.
 
 ---
 
-## 🛠️ Local Deployment (Optional)
+## 🧮 Customizing Math Models
 
-For custom modifications or faster update intervals, run locally.
+> After forking or deploying locally, you can freely modify Elo and SoS logic. All core code is in **`data_fetcher.py`**.
 
-### Requirements
+### Example 1: Adjusting Elo K-factor
 
-- Python 3.8+
-- Install dependencies: `pip install -r requirements.txt`
+K-factor controls how much a single match impacts Elo. Find it near the top of `data_fetcher.py` (~line 53):
 
-### Configure Token
-
-1. Apply for a token at [RobotEvents API](https://www.robotevents.com/api/v2)
-2. Create a `.env` file in the project root:
-
-```
-ROBOTEVENTS_TOKEN=your_token_here
+```python
+# ── Default ──
+K_FACTOR = 32
 ```
 
-### Run
+Increase to `40` for greater recent-match impact:
+
+```python
+# ── Modified: recent matches matter more ──
+K_FACTOR = 40
+```
+
+> 📌 **Recommended range**: VEX seasons are short — use **24 ~ 48** (chess newcomers K=40, professionals K=10).
+
+### Example 2: Adjusting SoS Normalization Range
+
+Default maps to `[0.30, 0.80]`. Widen the interval for greater X-axis spacing. Find the normalization logic in `run_once()` (~line 1005):
+
+```python
+# ── Default: maps to [0.30, 0.80] ──
+if raw_max > raw_min:
+    df["strength_of_schedule"] = 0.30 + (df["strength_of_schedule"] - raw_min) / (raw_max - raw_min) * 0.50
+```
+
+Change to `[0.10, 0.90]`:
+
+```python
+# ── Modified: maps to [0.10, 0.90] for wider X-axis spread ──
+if raw_max > raw_min:
+    df["strength_of_schedule"] = 0.10 + (df["strength_of_schedule"] - raw_min) / (raw_max - raw_min) * 0.80
+```
+
+> 💡 Formula: `lower + ... × (upper − lower)`. After modifying, also update the X-axis `range` in `generate_interactive_html()`.
+
+---
+
+## ☁️ Cloud Serverless Deployment (GitHub Pages)
+
+This project defaults to a fully automated **GitHub Actions + GitHub Pages** architecture — no server needed:
+
+```
+RobotEvents API ──▶ GitHub Actions (Cron) ──▶ rankings/index.html ──▶ GitHub Pages
+```
+
+1. Actions triggers on Cron schedule → runs `data_fetcher.py`
+2. Computes Elo / SoS → generates `rankings/index.html`
+3. Auto commits & pushes → GitHub Pages serves immediately
+
+> 💡 **Fork and go** — no server, database, or domain required.
+
+### ⏱️ Adjusting Cloud Update Frequency
+
+Configuration file: **`.github/workflows/deploy.yml`** — modify the `cron` expression:
+
+```yaml
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '*/30 * * * *'    # ← Modify this line
+```
+
+Common Cron examples:
+
+```yaml
+# 🟢 Default: every 30 minutes
+- cron: '*/30 * * * *'
+
+# 🔵 Every 6 hours (saves Actions quota)
+- cron: '0 */6 * * *'
+
+# 🟡 Once daily at midnight (off-season)
+- cron: '0 0 * * *'
+
+# 🔴 Every 2 hours (competition-heavy period)
+- cron: '0 */2 * * *'
+```
+
+> ⚠️ GitHub Actions free tier: private repos **2000 min/month**, public repos unlimited. Each run takes ~10-15 min.
+
+---
+
+## 🖥️ Local Deployment & Auto-Updates
+
+> For users who want to run on a local machine, private server, or Raspberry Pi.
+
+### 📋 Setup
 
 ```bash
-# Fetch data + generate HTML (first run ~8-15 min)
+# 1. Clone the project
+git clone https://github.com/hlzx-cpu/VEX-rankings.git
+cd VEX-rankings
+
+# 2. Install dependencies (Python 3.8+)
+pip install -r requirements.txt
+
+# 3. Configure Token
+#    Apply at https://www.robotevents.com/api/v2
+echo "ROBOTEVENTS_TOKEN=your_token_here" > .env
+```
+
+### ▶️ Running
+
+```bash
+# Single fetch + generate HTML (first run ~8-15 min)
 python data_fetcher.py
 
-# Loop mode (update every 600 seconds)
+# Built-in loop mode (update every 600 seconds)
 python data_fetcher.py --loop 600
 
 # Optional: Dash local dashboard (http://localhost:8050)
 python app.py
 ```
 
-### Customization
+### 🔄 Automating with System Crontab (Linux / macOS)
 
-| What                           | Where                                                     |
-| ------------------------------ | --------------------------------------------------------- |
-| Faster update interval         | `cron` in `.github/workflows/deploy.yml`, or `--loop` arg |
-| Adjust K-factor                | `K_FACTOR` in `data_fetcher.py`                           |
-| Change SoS normalization range | Mapping coefficients in `run_once()`                      |
-| Modify chart colors/layout     | `generate_interactive_html()` in `data_fetcher.py`        |
-| Add new season                 | Year parameter in `get_vurc_season_id()`                  |
+For more reliable automation than `--loop`, use your OS cron scheduler:
 
----
+```bash
+# Edit crontab
+crontab -e
+```
 
-## � Yearly Season Update Guide
+Add the following lines in the editor:
 
-When a new season starts, update the year numbers in the following locations. The project will then automatically fetch the new season's data.
+```bash
+# ── Run every hour on the hour ──
+0 * * * * cd /your/absolute/path/VEX-rankings && /usr/bin/python3 data_fetcher.py >> /tmp/vex-rankings.log 2>&1
 
-### Files to Update
+# ── Run every 30 minutes ──
+# */30 * * * * cd /your/absolute/path/VEX-rankings && /usr/bin/python3 data_fetcher.py >> /tmp/vex-rankings.log 2>&1
 
-| #   | File              | Location                                                          | Current Value                 | Notes                                                                                                   |
-| --- | ----------------- | ----------------------------------------------------------------- | ----------------------------- | ------------------------------------------------------------------------------------------------------- |
-| 1   | `data_fetcher.py` | `run_once()` (~L966)                                              | `get_vurc_season_id(2025)`    | **Most critical**: determines which season to fetch. Change to the new season's start year, e.g. `2026` |
-| 2   | `data_fetcher.py` | `<title>` & `<h1>` in `generate_interactive_html()` (~L479, L633) | `VURC 2025-2026`              | Page title and heading text                                                                             |
-| 3   | `data_fetcher.py` | Two `chartTitle` entries (~L668, L684)                            | `---VURC--- 2025-2026`        | Chart title (English & Chinese)                                                                         |
-| 4   | `app.py`          | `dash.Dash(title=...)` (L45)                                      | `VURC 2025-2026 战绩看板`     | Dash local dashboard browser tab title                                                                  |
-| 5   | `app.py`          | Page H2 heading (L67)                                             | `VURC 2025-2026 实时战绩看板` | Dash local dashboard page title                                                                         |
-| 6   | `app.py`          | Chart title (L289)                                                | `---VURC--- 2025-2026`        | Dash local dashboard chart title                                                                        |
+# ── Run every 6 hours ──
+# 0 */6 * * * cd /your/absolute/path/VEX-rankings && /usr/bin/python3 data_fetcher.py >> /tmp/vex-rankings.log 2>&1
+```
 
-> **Quick method**: Use your editor's global search-and-replace to change `2025-2026` → new season (e.g. `2026-2027`).  
-> Also change the `2025` parameter in `get_vurc_season_id(2025)` to `2026`.
+> 📌 **Notes**:
+> - Replace `/your/absolute/path/` with the actual path (e.g. `/home/pi/VEX-rankings`)
+> - Use the full `python3` path (check with `which python3`)
+> - Output is redirected to a log file for debugging
+> - Make sure `.env` has the token configured
 
-### Web (GitHub Actions auto-deployment)
+### 🪟 Automating on Windows (Task Scheduler)
 
-Just edit the source files and push to GitHub — Actions will automatically regenerate `rankings/index.html`:
+Windows users can use Task Scheduler for the same effect:
 
-1. **Edit `data_fetcher.py`**: Change the year parameter in `run_once()`
-2. **Update title text** (optional but recommended): global replace `2025-2026` → new season
-3. Push the code; GitHub Actions will generate the new season's rankings within 30 minutes
+```powershell
+# Create an hourly scheduled task
+schtasks /create /tn "VEX-Rankings-Update" /tr "python E:\your\path\VEX-rankings\data_fetcher.py" /sc hourly /st 00:00
+```
 
-### Local
-
-1. Make the same year changes in the files listed above
-2. Re-run `python data_fetcher.py` to fetch new season data
-3. Optionally run `python app.py` for the local dashboard
-
-### Does the API Token need regular renewal?
-
-- **RobotEvents API Tokens do not expire** — once issued, they work indefinitely; no yearly renewal needed
-- Token storage locations:
-  - **GitHub Actions**: Repository Settings → Secrets → `ROBOTEVENTS_TOKEN`
-  - **Local**: `.env` file in the project root (`ROBOTEVENTS_TOKEN=...`)
-- If the token stops working (e.g. account change or revocation), apply for a new one at [RobotEvents API](https://www.robotevents.com/api/v2)
+Or use the GUI: **Start Menu → search "Task Scheduler" → Create Basic Task**, then follow the wizard to set frequency and script path.
 
 ---
 
-## �📄 License
+## 📅 Yearly Season Update
 
-MIT
+When a new season starts, update these year numbers:
+
+| #   | File              | Location                      | Current Value              | Notes                                               |
+| --- | ----------------- | ----------------------------- | -------------------------- | --------------------------------------------------- |
+| 1   | `data_fetcher.py` | `run_once()` function         | `get_vurc_season_id(2025)` | **Most critical**: determines which season to fetch |
+| 2   | `data_fetcher.py` | `generate_interactive_html()` | `VURC 2025-2026`           | Page title                                          |
+| 3   | `app.py`          | `dash.Dash(title=...)`        | `VURC 2025-2026 战绩看板`  | Dash dashboard title                                |
+
+> 💡 Global search-replace `2025-2026` → new season, and change the parameter in `get_vurc_season_id(2025)` accordingly.
+
+---
+
+## 🗂️ Project Structure
+
+```
+VEX-rankings/
+├── .github/workflows/
+│   └── deploy.yml              # GitHub Actions scheduling config
+├── icons/
+│   └── VEX Robotics 2C.svg     # Project logo
+├── rankings/
+│   └── index.html              # Auto-generated interactive rankings page
+├── data_fetcher.py             # Core engine: data fetching + Elo/SoS + HTML generation
+├── app.py                      # Dash local dashboard (optional)
+├── dashboard_data.csv          # Intermediate data file
+├── requirements.txt            # Python dependencies
+├── readme.md                   # 中文文档
+└── README_EN.md                # English documentation
+```
+
+---
+
+## ❓ FAQ
+
+<details>
+<summary><b>Does the API Token need regular renewal?</b></summary>
+
+**No.** RobotEvents API Tokens do not expire — valid indefinitely once issued.
+- **GitHub Actions**: Repository Settings → Secrets → `ROBOTEVENTS_TOKEN`
+- **Local**: `.env` file in the project root
+
+</details>
+
+<details>
+<summary><b>Why does the first run take 8-15 minutes?</b></summary>
+
+The RobotEvents API rate-limits at ~1 req/s. The script paginates through all events, matches, and skills data. Subsequent runs take similar time (full fetch).
+
+</details>
+
+<details>
+<summary><b>How do I change chart colors and layout?</b></summary>
+
+Edit `generate_interactive_html()` in `data_fetcher.py`. Adjustable items: color scale (`colorscale`), backgrounds (`paper_bgcolor`/`plot_bgcolor`), fonts, etc.
+
+</details>
+
+---
+
+## 📄 License
+
+[MIT](LICENSE) © VEX-Rankings Contributors
