@@ -289,9 +289,3 @@ VEX-rankings/
 修改 `data_fetcher.py` 中 `generate_interactive_html()` 函数，可调内容：色盘（`colorscale`）、背景色（`paper_bgcolor`/`plot_bgcolor`）、字体等。
 
 </details>
-
----
-
-## 📄 License
-
-[MIT](LICENSE) © VEX-Rankings Contributors
