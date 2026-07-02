@@ -3,21 +3,26 @@ name: Update VURC Rankings
 on:
   workflow_dispatch:          # 手动触发
   schedule:
-    - cron: '*/30 * * * *'    # 每 30 分钟自动触发
+    - cron: '0 */6 * * *'     # 每 6 小时自动触发
 
 permissions:
   contents: write
 
+concurrency:
+  group: update-vurc-rankings
+  cancel-in-progress: false
+
 jobs:
   update:
     runs-on: ubuntu-latest
+    timeout-minutes: 45
 
     steps:
       # ── 1. 拉取仓库代码
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       # ── 2. 配置 Python
-      - uses: actions/setup-python@v4
+      - uses: actions/setup-python@v5
         with:
           python-version: '3.10'
 
@@ -28,15 +33,18 @@ jobs:
       # ── 4. 抓取数据 & 生成 HTML
       - name: Fetch data and generate HTML
         env:
-          ROBOTEVENTS_TOKEN: ${{ secrets.ROBOTEVENTS_TOKEN }}
+          EVENTS_VEX_REQUEST_INTERVAL: "1.0"
         run: python data_fetcher.py
 
       # ── 5. 提交并推送（无变动时优雅跳过）
       - name: Commit and push if changed
         run: |
-          git config user.name  "VURC-Bot"
+          git config user.name "VURC-Bot"
           git config user.email "bot@github.com"
           git add rankings/index.html
-          git diff --cached --quiet && echo "No changes to commit." && exit 0
+          if git diff --cached --quiet; then
+            echo "No changes to commit."
+            exit 0
+          fi
           git commit -m "auto: update rankings $(date -u +'%Y-%m-%d %H:%M UTC')"
           git push
