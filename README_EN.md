@@ -3,7 +3,7 @@
 </p>
 <h1 align="center">VEX-Rankings</h1>
 <p align="center">
-  <strong>🤖 Automated Live Elo Rankings for VEX U (VURC) 2025-2026 Season</strong>
+  <strong>🤖 Automated Elo Rankings for VEX U (VURC) 2026-2027 Override Season</strong>
 </p>
 <p align="center">
   Serverless · GitHub Actions Auto-Update · Static GitHub Pages Hosting
@@ -25,7 +25,7 @@
 
 > **🌐 View Online** → [hlzx-cpu.github.io/VEX-rankings/rankings/](https://hlzx-cpu.github.io/VEX-rankings/rankings/)
 >
-> Data refreshes every 30 minutes via GitHub Actions — no setup required.
+> Data should refresh on a low-frequency schedule such as every 6 hours via GitHub Actions — no setup required.
 
 ---
 
@@ -67,7 +67,7 @@ $$SoS_{raw} = \frac{1}{n}\sum_{i=1}^{n}Elo(\text{opponent}_i) \qquad SoS = 0.30 
 
 ### 4️⃣ Data Source
 
-All data fetched from [RobotEvents API v2](https://www.robotevents.com/api/v2) — Teams, Matches, and Skills endpoints.
+All data is fetched from public [events.vex.com](https://events.vex.com) pages and JSON endpoints, covering Teams, Matches, and Skills data. The current low-frequency update path does not require a personal API token.
 
 ---
 
@@ -120,7 +120,7 @@ if raw_max > raw_min:
 This project defaults to a fully automated **GitHub Actions + GitHub Pages** architecture — no server needed:
 
 ```
-RobotEvents API ──▶ GitHub Actions (Cron) ──▶ rankings/index.html ──▶ GitHub Pages
+events.vex.com ──▶ GitHub Actions (Cron) ──▶ rankings/index.html ──▶ GitHub Pages
 ```
 
 1. Actions triggers on Cron schedule → runs `data_fetcher.py`
@@ -143,8 +143,8 @@ on:
 Common Cron examples:
 
 ```yaml
-# 🟢 Default: every 30 minutes
-- cron: '*/30 * * * *'
+# 🟢 Recommended: every 6 hours
+- cron: '0 */6 * * *'
 
 # 🔵 Every 6 hours (saves Actions quota)
 - cron: '0 */6 * * *'
@@ -174,9 +174,9 @@ cd VEX-rankings
 # 2. Install dependencies (Python 3.8+)
 pip install -r requirements.txt
 
-# 3. Configure Token
-#    Apply at https://www.robotevents.com/api/v2
-echo "ROBOTEVENTS_TOKEN=your_token_here" > .env
+# 3. No token is required for the current public data source
+#    Optional: tune the request interval
+echo "EVENTS_VEX_REQUEST_INTERVAL=1.0" > .env
 ```
 
 ### ▶️ Running
@@ -185,8 +185,8 @@ echo "ROBOTEVENTS_TOKEN=your_token_here" > .env
 # Single fetch + generate HTML (first run ~8-15 min)
 python data_fetcher.py
 
-# Built-in loop mode (update every 600 seconds)
-python data_fetcher.py --loop 600
+# Built-in loop mode (for example, update every 6 hours)
+python data_fetcher.py --loop 21600
 
 # Optional: Dash local dashboard (http://localhost:8050)
 python app.py
@@ -207,8 +207,8 @@ Add the following lines in the editor:
 # ── Run every hour on the hour ──
 0 * * * * cd /your/absolute/path/VEX-rankings && /usr/bin/python3 data_fetcher.py >> /tmp/vex-rankings.log 2>&1
 
-# ── Run every 30 minutes ──
-# */30 * * * * cd /your/absolute/path/VEX-rankings && /usr/bin/python3 data_fetcher.py >> /tmp/vex-rankings.log 2>&1
+# ── Run every 12 hours ──
+# 0 */12 * * * cd /your/absolute/path/VEX-rankings && /usr/bin/python3 data_fetcher.py >> /tmp/vex-rankings.log 2>&1
 
 # ── Run every 6 hours ──
 # 0 */6 * * * cd /your/absolute/path/VEX-rankings && /usr/bin/python3 data_fetcher.py >> /tmp/vex-rankings.log 2>&1
@@ -239,11 +239,11 @@ When a new season starts, update these year numbers:
 
 | #   | File              | Location                      | Current Value              | Notes                                               |
 | --- | ----------------- | ----------------------------- | -------------------------- | --------------------------------------------------- |
-| 1   | `data_fetcher.py` | `run_once()` function         | `get_vurc_season_id(2025)` | **Most critical**: determines which season to fetch |
-| 2   | `data_fetcher.py` | `generate_interactive_html()` | `VURC 2025-2026`           | Page title                                          |
-| 3   | `app.py`          | `dash.Dash(title=...)`        | `VURC 2025-2026 战绩看板`  | Dash dashboard title                                |
+| 1   | `data_fetcher.py` | top-level config              | `SEASON_YEAR = 2026`       | **Most critical**: determines which season to fetch |
+| 2   | `data_fetcher.py` | `GAME_NAME` / HTML copy       | `Override`                 | Page title and empty-data message                   |
+| 3   | `app.py`          | `dash.Dash(title=...)`        | `VURC 2026-2027 Override 战绩看板` | Dash dashboard title                       |
 
-> 💡 Global search-replace `2025-2026` → new season, and change the parameter in `get_vurc_season_id(2025)` accordingly.
+> 💡 Search for the current season year and update `SEASON_YEAR` / `GAME_NAME`.
 
 ---
 
@@ -272,16 +272,14 @@ VEX-rankings/
 <details>
 <summary><b>Does the API Token need regular renewal?</b></summary>
 
-**No.** RobotEvents API Tokens do not expire — valid indefinitely once issued.
-- **GitHub Actions**: Repository Settings → Secrets → `ROBOTEVENTS_TOKEN`
-- **Local**: `.env` file in the project root
+**Not currently.** This project now uses low-frequency public events.vex.com data access, so GitHub Actions does not need `ROBOTEVENTS_TOKEN`.
 
 </details>
 
 <details>
 <summary><b>Why does the first run take 8-15 minutes?</b></summary>
 
-The RobotEvents API rate-limits at ~1 req/s. The script paginates through all events, matches, and skills data. Subsequent runs take similar time (full fetch).
+Public endpoints may still rate-limit. Use a low-frequency schedule such as every 6 hours; the script throttles requests and backs off on 429 responses.
 
 </details>
 

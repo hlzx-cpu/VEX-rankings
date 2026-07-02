@@ -1,10 +1,10 @@
 """
 data_fetcher.py
 ===============
-后台数据抓取引擎 —— VURC 2025-2026 战绩分析看板
+后台数据抓取引擎 —— VURC 2026-2027 Override 战绩分析看板
 
 职责：
-  1. 从 RobotEvents API v2 拉取 Teams / Matches / Skills 数据
+  1. 从 events.vex.com 公共页面/API 拉取 Teams / Matches / Skills 数据
   2. 计算每支队伍的 Elo、SoS、Driver Skills、Programming Skills
   3. 将结果写入 dashboard_data.csv（供 app.py 轮询读取）
 
@@ -20,6 +20,7 @@ import argparse
 import datetime
 import logging
 import os
+import re
 import time
 from collections import defaultdict
 from pathlib import Path
@@ -30,24 +31,22 @@ import plotly.graph_objects as go
 import requests
 from dotenv import load_dotenv
 
-# 从当前目录的 .env 文件加载环境变量
+# 从当前目录的 .env 文件加载环境变量（保留兼容，但公共数据源不需要 Token）
 load_dotenv(Path(__file__).parent / ".env")
 
 # ─── 配置 ──────────────────────────────────────────────────────────────────────
-# Token 从 .env 文件读取，源码中不存储任何密钥
-API_TOKEN = os.environ.get("ROBOTEVENTS_TOKEN", "")
-if not API_TOKEN:
-    raise EnvironmentError(
-        "未找到 ROBOTEVENTS_TOKEN。\n"
-        "请在项目根目录创建 .env 文件，写入：\n"
-        "  ROBOTEVENTS_TOKEN=你的Token"
-    )
-BASE_URL        = "https://www.robotevents.com/api/v2"
-PROGRAM_ID      = 4          # VEX U
+EVENTS_BASE     = "https://events.vex.com"
+PUBLIC_API_BASE = f"{EVENTS_BASE}/api"
+PUBLIC_V2_BASE  = f"{EVENTS_BASE}/api/v2"
+PROGRAM_ID      = 4          # VEX U / VURC
+PROGRAM_SLUG    = "college-competition"
+SEASON_YEAR     = 2026
+SEASON_LABEL    = f"{SEASON_YEAR}-{SEASON_YEAR + 1}"
+GAME_NAME       = "Override"
 OUTPUT_CSV      = Path(__file__).parent / "dashboard_data.csv"
 K_FACTOR        = 32
 INITIAL_ELO     = 1500
-REQUEST_INTERVAL = 2.0       # 每次请求间隔秒数（API 限速约 1 req/s，保守设为 2s）
+REQUEST_INTERVAL = float(os.environ.get("EVENTS_VEX_REQUEST_INTERVAL", "1.0"))
 
 logging.basicConfig(
     level=logging.INFO,
@@ -57,112 +56,230 @@ logging.basicConfig(
 log = logging.getLogger(__name__)
 
 # ─── API 工具函数 ───────────────────────────────────────────────────────────────
-HEADERS = {
-    "Authorization": f"Bearer {API_TOKEN}",
-    "Accept": "application/json",
-}
-
-
 class NotFoundError(RuntimeError):
-    """HTTP 4xx 错误（资源不存在），不应重试。"""
+    """HTTP 404/410 等资源不存在错误，不应重试。"""
 
 
-def _get(endpoint: str, params: dict | None = None) -> dict:
-    """GET 请求。
-    - 每次成功请求后主动 sleep REQUEST_INTERVAL 秒（主动限速）
-    - 4xx (非429): 立即抛出 NotFoundError，不重试
-    - 429 Too Many Requests: 退避等待后重试，最多 5 次
-    - 5xx / 超时: 最多重试 3 次
+def _event_entity_id(event: dict) -> int:
+    """events.vex.com 公共列表里的 event_entity_id 才是 /api/v2 使用的赛事 id。"""
+    return int(event.get("event_entity_id") or event.get("id"))
+
+
+class EventsVexClient:
+    """events.vex.com 公共数据客户端。
+
+    非 /api/v2 的 JSON 端点公开可读；/api/v2 赛事端点需要先访问公开赛事页，
+    用匿名 session cookie + 页面 CSRF token 作为 Ajax 请求上下文。
     """
-    url = f"{BASE_URL}/{endpoint.lstrip('/')}"
-    max_attempts = 8
-    for attempt in range(max_attempts):
-        try:
-            r = requests.get(url, headers=HEADERS, params=params, timeout=30)
-            if r.status_code == 429:
-                # 速率限制：退避等待（尊重 Retry-After 响应头）
-                retry_after = r.headers.get("Retry-After")
-                wait = int(retry_after) if retry_after else max(30, 30 * (attempt + 1))
-                log.warning("触发 429 速率限制，等待 %d 秒再重试 (attempt=%d)...", wait, attempt + 1)
-                time.sleep(wait)
-                continue
-            if 400 <= r.status_code < 500:
-                raise NotFoundError(f"HTTP {r.status_code}: {url}")
-            r.raise_for_status()
-            time.sleep(REQUEST_INTERVAL)   # 主动限速，避免触发 429
-            return r.json()
-        except NotFoundError:
-            raise
-        except requests.RequestException as exc:
-            log.warning("请求失败 (%s) attempt=%d: %s", url, attempt + 1, exc)
-            if attempt < max_attempts - 1:
-                time.sleep(min(2 ** attempt, 30))
-    raise RuntimeError(f"API 请求多次失败: {url}")
+
+    def __init__(self) -> None:
+        self.session = requests.Session()
+        self.session.headers.update({
+            "Accept": "application/json, text/plain, */*",
+            "User-Agent": "VEX-rankings/1.0 (+https://github.com/hlzx-cpu/VEX-rankings)",
+        })
+        self._event_context: dict[int, dict[str, str]] = {}
+
+    def request(
+        self,
+        method: str,
+        url: str,
+        *,
+        params: dict | None = None,
+        json_payload: dict | None = None,
+        headers: dict | None = None,
+    ) -> requests.Response:
+        max_attempts = 8
+        for attempt in range(max_attempts):
+            try:
+                response = self.session.request(
+                    method,
+                    url,
+                    params=params,
+                    json=json_payload,
+                    headers=headers,
+                    timeout=30,
+                )
+                if response.status_code == 429:
+                    retry_after = response.headers.get("Retry-After")
+                    wait = int(retry_after) if retry_after else max(30, 30 * (attempt + 1))
+                    log.warning("触发 429 速率限制，等待 %d 秒再重试 (attempt=%d)...", wait, attempt + 1)
+                    time.sleep(wait)
+                    continue
+                if response.status_code in {404, 410}:
+                    raise NotFoundError(f"HTTP {response.status_code}: {url}")
+                if 400 <= response.status_code < 500:
+                    raise RuntimeError(f"HTTP {response.status_code}: {url} - {response.text[:200]}")
+                response.raise_for_status()
+                time.sleep(REQUEST_INTERVAL)
+                return response
+            except NotFoundError:
+                raise
+            except requests.RequestException as exc:
+                log.warning("请求失败 (%s) attempt=%d: %s", url, attempt + 1, exc)
+                if attempt < max_attempts - 1:
+                    time.sleep(min(2 ** attempt, 30))
+        raise RuntimeError(f"API 请求多次失败: {url}")
+
+    def get_public(self, path: str, params: dict | None = None):
+        url = f"{PUBLIC_API_BASE}/{path.lstrip('/')}"
+        return self.request("GET", url, params=params).json()
+
+    def post_public(self, path: str, payload: dict):
+        url = f"{PUBLIC_API_BASE}/{path.lstrip('/')}"
+        return self.request(
+            "POST",
+            url,
+            json_payload=payload,
+            headers={"Content-Type": "application/json", "X-Requested-With": "XMLHttpRequest"},
+        ).json()
+
+    def event_context(self, event: dict) -> dict[str, str]:
+        event_id = _event_entity_id(event)
+        if event_id in self._event_context:
+            return self._event_context[event_id]
+
+        sku = event.get("sku")
+        if not sku:
+            raise NotFoundError(f"Event {event_id} missing sku")
+        slug = event.get("program_slug") or PROGRAM_SLUG
+        referer = f"{EVENTS_BASE}/robot-competitions/{slug}/{sku}.html"
+        html = self.request("GET", referer, headers={"Accept": "text/html"}).text
+        match = re.search(r'<meta\s+name="csrf-token"\s+content="([^"]*)"', html)
+        if not match:
+            raise RuntimeError(f"未能从赛事页获取 CSRF token: {referer}")
+
+        context = {"csrf": match.group(1), "referer": referer}
+        self._event_context[event_id] = context
+        return context
+
+    def get_v2(self, event: dict, endpoint: str, params: dict | None = None):
+        context = self.event_context(event)
+        url = f"{PUBLIC_V2_BASE}/{endpoint.lstrip('/')}"
+        headers = {
+            "Accept": "application/json",
+            "X-Requested-With": "XMLHttpRequest",
+            "X-CSRF-TOKEN": context["csrf"],
+            "Referer": context["referer"],
+        }
+        return self.request("GET", url, params=params, headers=headers).json()
+
+    def paginate_v2(self, event: dict, endpoint: str, params: dict | None = None) -> list[dict]:
+        params = dict(params or {})
+        params.setdefault("per_page", 250)
+        results: list[dict] = []
+        page = 1
+        while True:
+            params["page"] = page
+            payload = self.get_v2(event, endpoint, params=params)
+            batch = payload.get("data", [])
+            results.extend(batch)
+            meta = payload.get("meta", {})
+            last_page = int(meta.get("last_page") or 1)
+            log.debug("  %s page=%d/%d, fetched=%d", endpoint, page, last_page, len(batch))
+            if page >= last_page:
+                break
+            page += 1
+        return results
 
 
-def paginate(endpoint: str, params: dict | None = None) -> list[dict]:
-    """自动分页，返回合并后的 data 列表。"""
-    params = dict(params or {})
-    params.setdefault("per_page", 250)
-    results = []
-    page = 1
-    while True:
-        params["page"] = page
-        payload = _get(endpoint, params)
-        batch = payload.get("data", [])
-        results.extend(batch)
-        meta = payload.get("meta", {})
-        last_page = meta.get("last_page", 1)
-        log.debug("  %s page=%d/%d, fetched=%d", endpoint, page, last_page, len(batch))
-        if page >= last_page:
-            break
-        page += 1
-    return results
+CLIENT = EventsVexClient()
 
 
 # ─── Season 查找 ────────────────────────────────────────────────────────────────
-def get_vurc_season_id(year: int = 2025) -> int:
-    """返回 VEX U 指定赛季的 season ID（含 year 年份的赛季）。"""
-    seasons = paginate("seasons", {"program[]": PROGRAM_ID})
-    for s in seasons:
-        if str(year) in s.get("name", ""):
-            log.info("找到赛季: %s (id=%s)", s["name"], s["id"])
-            return s["id"]
-    # 备选：返回最新赛季
-    if seasons:
-        s = seasons[-1]
-        log.warning("未找到 %d 年赛季，使用最新: %s (id=%s)", year, s["name"], s["id"])
-        return s["id"]
-    raise RuntimeError("未找到任何 VEX U 赛季")
+def get_vurc_season_id(year: int = SEASON_YEAR) -> int:
+    """返回 VEX U 指定赛季的 season ID。"""
+    payload = CLIENT.get_public("programs")
+    programs = payload.get("data", payload if isinstance(payload, list) else [])
+    program = next((p for p in programs if int(p.get("id", -1)) == PROGRAM_ID), None)
+    if not program:
+        raise RuntimeError("未在 events.vex.com/api/programs 中找到 VEX U program")
+
+    expected_label = f"{year}-{year + 1}"
+    seasons = program.get("seasons", [])
+    for season in seasons:
+        if season.get("start_year") == str(year) or expected_label in season.get("name", ""):
+            log.info("找到赛季: %s (id=%s)", season["name"], season["id"])
+            return int(season["id"])
+    raise RuntimeError(f"未找到 VEX U {expected_label} 赛季")
 
 
 # ─── 数据抓取 ────────────────────────────────────────────────────────────────────
-def fetch_teams(season_id: int) -> list[str]:
-    """返回本赛季所有注册队伍的编号列表（number）。"""
-    log.info("抓取 Teams (season=%d)...", season_id)
-    rows = paginate("teams", {"program[]": PROGRAM_ID, "season[]": season_id})
-    numbers = [r["number"] for r in rows if r.get("number")]
-    log.info("共 %d 支队伍", len(numbers))
-    return numbers
+def fetch_events(season_id: int) -> list[dict]:
+    """通过公开 /api/events 拉取指定赛季的 VURC 赛事列表。"""
+    log.info("抓取 Events (season=%d, label=%s)...", season_id, SEASON_LABEL)
+    payload = {
+        "programs": [str(PROGRAM_ID)],
+        "country": "All",
+        "region": "All",
+        "what": "events",
+        "season": SEASON_LABEL,
+        "city": "",
+        "only_upcoming_events": False,
+        "lat": 32,
+        "lng": -96,
+    }
+    rows = CLIENT.post_public("events", payload).get("data", [])
+    events = [
+        row for row in rows
+        if int(row.get("program_id", PROGRAM_ID)) == PROGRAM_ID
+        and int(row.get("season_id", season_id)) == season_id
+        and row.get("event_entity_id")
+    ]
+    events.sort(key=lambda row: (str(row.get("date", "")), str(row.get("sku", ""))))
+    log.info("共 %d 个赛事", len(events))
+    return events
+
+
+def fetch_teams(season_id: int, events: list[dict]) -> list[str]:
+    """返回本赛季已出现在赛事报名列表中的队伍编号。"""
+    log.info("抓取 Teams (season=%d)，共 %d 个赛事...", season_id, len(events))
+    numbers: set[str] = set()
+    for ev in events:
+        event_id = _event_entity_id(ev)
+        try:
+            rows = CLIENT.paginate_v2(ev, f"events/{event_id}/teams")
+        except NotFoundError:
+            continue
+        except RuntimeError as exc:
+            log.warning("跳过 event %s 的 Teams: %s", event_id, exc)
+            continue
+        for row in rows:
+            number = row.get("number") or row.get("team", {}).get("name")
+            if number:
+                numbers.add(str(number))
+    result = sorted(numbers)
+    log.info("共 %d 支队伍", len(result))
+    return result
+
+
+def _team_number(team: dict | None) -> str:
+    if not team:
+        return ""
+    return str(team.get("number") or team.get("name") or team.get("code") or "")
 
 
 def _parse_match(m: dict, eid: int) -> dict | None:
     """将 API 返回的 match 对象解析为标准记录，失败返回 None。"""
+    started = m.get("started") or m.get("started_at")
+    if not started:
+        # 未来赛程通常只有 scheduled，没有 started 和有效比分，不能计入 Elo。
+        return None
     alliances = m.get("alliances", [])
     if len(alliances) < 2:
         return None
     red  = next((a for a in alliances if a.get("color") == "red"),  alliances[0])
     blue = next((a for a in alliances if a.get("color") == "blue"), alliances[1])
-    red_teams  = [t["team"].get("number") or t["team"].get("name", "")
-                  for t in red.get("teams",  []) if t.get("team")]
-    blue_teams = [t["team"].get("number") or t["team"].get("name", "")
-                  for t in blue.get("teams", []) if t.get("team")]
+    red_teams  = [_team_number(t.get("team")) for t in red.get("teams", [])]
+    blue_teams = [_team_number(t.get("team")) for t in blue.get("teams", [])]
+    red_teams  = [t for t in red_teams if t]
+    blue_teams = [t for t in blue_teams if t]
     if not red_teams or not blue_teams:
         return None
     return {
         "event_id":   eid,
         "match_id":   m.get("id"),
-        "started_at": m.get("started"),
+        "started_at": started,
         "red_teams":  red_teams,
         "blue_teams": blue_teams,
         "red_score":  red.get("score",  0) or 0,
@@ -172,8 +289,7 @@ def _parse_match(m: dict, eid: int) -> dict | None:
 
 def fetch_matches(season_id: int, events: list[dict]) -> pd.DataFrame:
     """
-    直接使用 event 对象中内嵌的 divisions 字段获取 division id，
-    再通过 /events/{eid}/divisions/{did}/matches 获取比赛数据。
+    先通过 /events/{id} 获取 divisions，再抓取 /events/{id}/divisions/{order}/matches。
     返回按 started_at 全局排序的 DataFrame。
     """
     log.info("抓取 Matches，共 %d 个赛事...", len(events))
@@ -182,20 +298,29 @@ def fetch_matches(season_id: int, events: list[dict]) -> pd.DataFrame:
     has_data = 0
 
     for ev in events:
-        eid = ev["id"]
+        eid = _event_entity_id(ev)
         ev_records: list[dict] = []
 
-        # 直接使用 event 对象中内嵌的 divisions 列表
-        divisions = ev.get("divisions", [])
+        try:
+            event_detail = CLIENT.get_v2(ev, f"events/{eid}")
+        except NotFoundError:
+            skipped += 1
+            continue
+        except RuntimeError as exc:
+            log.warning("跳过 event %d 的详情: %s", eid, exc)
+            skipped += 1
+            continue
+
+        divisions = event_detail.get("divisions", [])
         if not divisions:
             log.debug("Event %d 无 divisions 信息，跳过", eid)
             skipped += 1
             continue
 
         for div in divisions:
-            did = div["id"] if isinstance(div, dict) else div
+            did = div.get("order") or div.get("id") if isinstance(div, dict) else div
             try:
-                matches = paginate(f"events/{eid}/divisions/{did}/matches")
+                matches = CLIENT.paginate_v2(ev, f"events/{eid}/divisions/{did}/matches")
             except NotFoundError:
                 continue
             except RuntimeError:
@@ -219,7 +344,9 @@ def fetch_matches(season_id: int, events: list[dict]) -> pd.DataFrame:
     df = pd.DataFrame(records)
     if df.empty:
         log.warning("未抓取到任何 Match 数据")
-        return df
+        return pd.DataFrame(columns=[
+            "event_id", "match_id", "started_at", "red_teams", "blue_teams", "red_score", "blue_score"
+        ])
 
     df["started_at"] = pd.to_datetime(df["started_at"], utc=True, errors="coerce")
     df = df.sort_values("started_at").reset_index(drop=True)
@@ -240,9 +367,9 @@ def fetch_skills(events: list[dict]) -> pd.DataFrame:
     best: dict[str, dict] = {}
     _404_count = 0
     for ev in events:
-        eid = ev["id"]
+        eid = _event_entity_id(ev)
         try:
-            rows = paginate(f"events/{eid}/skills")
+            rows = CLIENT.paginate_v2(ev, f"events/{eid}/skills")
         except NotFoundError:
             _404_count += 1
             continue
@@ -251,7 +378,7 @@ def fetch_skills(events: list[dict]) -> pd.DataFrame:
             continue
 
         for r in rows:
-            team = r.get("team", {}).get("number", "") or r.get("team", {}).get("name", "")
+            team = _team_number(r.get("team"))
             if not team:
                 continue
             stype = r.get("type", "")   # "driver" | "programming"
@@ -268,7 +395,8 @@ def fetch_skills(events: list[dict]) -> pd.DataFrame:
 
 
     df = pd.DataFrame(
-        [{"team_name": k, **v} for k, v in best.items()]
+        [{"team_name": k, **v} for k, v in best.items()],
+        columns=["team_name", "driver_skills", "programming_skills"],
     )
     log.info("共 %d 支队伍有技能赛数据", len(df))
     return df
@@ -338,10 +466,26 @@ def generate_interactive_html(df: pd.DataFrame) -> None:
     """
     RANKINGS_DIR.mkdir(exist_ok=True)
 
+    expected_columns = ["team_name", "elo", "strength_of_schedule", "driver_skills", "programming_skills"]
+    for column in expected_columns:
+        if column not in df.columns:
+            df[column] = pd.Series(dtype="float64" if column != "team_name" else "object")
+
     has_skills = df[df["programming_skills"] > 0].copy()
     no_skills  = df[df["programming_skills"] == 0].copy()
 
     fig = go.Figure()
+
+    if df.empty:
+        fig.add_annotation(
+            text=f"No completed match data yet for VURC {SEASON_LABEL}: {GAME_NAME}.",
+            x=0.5,
+            y=0.5,
+            xref="paper",
+            yref="paper",
+            showarrow=False,
+            font=dict(size=18, color="#8b949e"),
+        )
 
     # ── 1) 有 skills 的队伍
     if not has_skills.empty:
@@ -417,9 +561,14 @@ def generate_interactive_html(df: pd.DataFrame) -> None:
         tickfont=dict(color="#8b949e"),
         title_font=dict(color="#c9d1d9"),
     )
-    elo_min = df["elo"].min()
-    elo_max = df["elo"].max()
-    elo_pad = max((elo_max - elo_min) * 0.05, 10)
+    if df.empty:
+        elo_min = INITIAL_ELO - 10
+        elo_max = INITIAL_ELO + 10
+        elo_pad = 10
+    else:
+        elo_min = df["elo"].min()
+        elo_max = df["elo"].max()
+        elo_pad = max((elo_max - elo_min) * 0.05, 10)
     fig.update_yaxes(
         title_text="Elo",
         range=[elo_min - elo_pad, elo_max + elo_pad], dtick=50,
@@ -434,7 +583,7 @@ def generate_interactive_html(df: pd.DataFrame) -> None:
         title=dict(
             text=(
                 "Elo vs Strength of Schedule vs Skills Scores "
-                "(Color = Driver, Size = Programming) ---VURC--- 2025-2026"
+                f"(Color = Driver, Size = Programming) ---VURC--- {SEASON_LABEL}"
             ),
             x=0, xanchor="left", font=dict(size=13, color="#e6edf3"),
         ),
@@ -476,7 +625,7 @@ def generate_interactive_html(df: pd.DataFrame) -> None:
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>VURC 2025-2026 Rankings</title>
+  <title>VURC {SEASON_LABEL} Rankings</title>
   <style>
     *, *::before, *::after {{ box-sizing: border-box; margin: 0; padding: 0; }}
 
@@ -630,7 +779,7 @@ def generate_interactive_html(df: pd.DataFrame) -> None:
 </head>
 <body>
   <div class="toolbar">
-    <h1>VURC 2025-2026 Rankings</h1>
+    <h1>VURC {SEASON_LABEL} Rankings</h1>
     <input type="text" id="team-input" placeholder="e.g.  SJTU1/SJTU2" />
     <button class="btn btn-primary" id="btn-search" data-i18n="search">🔍 Highlight</button>
     <button class="btn btn-secondary" id="btn-clear" data-i18n="clear">✕ Clear</button>
@@ -638,7 +787,7 @@ def generate_interactive_html(df: pd.DataFrame) -> None:
     <button class="btn btn-toggle" id="btn-lang" title="Switch language">中</button>
   </div>
   <div class="status-bar">
-    <span id="update-label" data-i18n="updated">Last updated: {update_time} (UTC+8) \u00b7 Auto-refresh every 30 min</span>
+    <span id="update-label" data-i18n="updated">Last updated: {update_time} (UTC+8) \u00b7 Auto-refresh every 6 hours</span>
   </div>
   <div id="info-panel"></div>
   <div id="chart-container">
@@ -663,9 +812,9 @@ def generate_interactive_html(df: pd.DataFrame) -> None:
       en: {{
         search:   '🔍 Highlight',
         clear:    '✕ Clear',
-        updated:  'Last updated: ' + UPDATE_TIME + ' (UTC+8) · Auto-refresh every 30 min',
+        updated:  'Last updated: ' + UPDATE_TIME + ' (UTC+8) · Auto-refresh every 6 hours',
         placeholder: 'e.g.  SJTU1/SJTU2',
-        chartTitle: 'Elo vs Strength of Schedule vs Skills Scores (Color = Driver, Size = Programming) ---VURC--- 2025-2026',
+        chartTitle: 'Elo vs Strength of Schedule vs Skills Scores (Color = Driver, Size = Programming) ---VURC--- {SEASON_LABEL}',
         xTitle:     'Strength of Schedule',
         yTitle:     'Elo',
         cbTitle:    'Driver Skills',
@@ -679,9 +828,9 @@ def generate_interactive_html(df: pd.DataFrame) -> None:
       zh: {{
         search:   '🔍 搜索',
         clear:    '✕ 清除',
-        updated:  '最后更新时间：' + UPDATE_TIME + '（北京时间）· 每 30 分钟刷新一次',
+        updated:  '最后更新时间：' + UPDATE_TIME + '（北京时间）· 每 6 小时刷新一次',
         placeholder: '例如  SJTU1/SJTU2',
-        chartTitle: 'Elo vs 赛程强度 vs 技能赛分数（颜色 = 手动，大小 = 自动）---VURC--- 2025-2026',
+        chartTitle: 'Elo vs 赛程强度 vs 技能赛分数（颜色 = 手动，大小 = 自动）---VURC--- {SEASON_LABEL}',
         xTitle:     '赛程强度',
         yTitle:     'Elo',
         cbTitle:    '技能赛得分',
@@ -963,49 +1112,36 @@ def run_once() -> None:
     """执行一次完整的数据拉取、计算、输出流程。"""
     log.info("═══ 开始数据更新 ═══")
 
-    season_id = get_vurc_season_id(2025)
-    teams     = fetch_teams(season_id)
-
-    # 获取一次 events 列表，两个函数共用，避免重复请求
-    log.info("抓取 Events (season=%d)...", season_id)
-    events = paginate("events", {"program[]": PROGRAM_ID, "season[]": season_id})
-    log.info("共 %d 个赛事", len(events))
-
-    # ── 冷却期：Teams/Events 大批量请求后，等待 API 配额恢复 ───────
-    cooldown = 30
-    log.info("大批量请求完成，冷却 %d 秒，等待 API 配额恢复...", cooldown)
-    time.sleep(cooldown)
+    season_id = get_vurc_season_id(SEASON_YEAR)
+    events    = fetch_events(season_id)
+    teams     = fetch_teams(season_id, events)
 
     matches   = fetch_matches(season_id, events)
-
-    # ── 冷却期：Matches 大批量请求后，等待 API 配额恢复 ────────
-    cooldown2 = 30
-    log.info("Matches 抓取完成，冷却 %d 秒...", cooldown2)
-    time.sleep(cooldown2)
-
     skills    = fetch_skills(events)
 
     if matches.empty:
-        log.error("无比赛数据，本次跳过写入。")
-        return
+        log.warning("无已完成 Match 数据，将生成空 CSV/HTML。")
+        df = pd.DataFrame(columns=[
+            "team_name", "elo", "strength_of_schedule", "driver_skills", "programming_skills"
+        ])
+    else:
+        elo_sos = compute_elo_sos(matches, teams)
 
-    elo_sos = compute_elo_sos(matches, teams)
+        # 合并 skills
+        df = elo_sos.merge(skills, on="team_name", how="left")
+        df["driver_skills"]      = df["driver_skills"].fillna(0).astype(int)
+        df["programming_skills"] = df["programming_skills"].fillna(0).astype(int)
 
-    # 合并 skills
-    df = elo_sos.merge(skills, on="team_name", how="left")
-    df["driver_skills"]      = df["driver_skills"].fillna(0).astype(int)
-    df["programming_skills"] = df["programming_skills"].fillna(0).astype(int)
+        # 过滤掉没有参加过任何比赛（SoS = 初始值 且 Elo = 初始值）的队伍
+        df = df[~((df["elo"] == INITIAL_ELO) & (df["strength_of_schedule"] == INITIAL_ELO))]
 
-    # 过滤掉没有参加过任何比赛（SoS = 初始值 且 Elo = 初始值）的队伍
-    df = df[~((df["elo"] == INITIAL_ELO) & (df["strength_of_schedule"] == INITIAL_ELO))]
-
-    # 将 SoS 归一化到 ~ [0.3, 0.8]（按百分位线性映射）
-    if len(df) > 1:
-        raw_min = df["strength_of_schedule"].min()
-        raw_max = df["strength_of_schedule"].max()
-        if raw_max > raw_min:
-            df["strength_of_schedule"] = 0.30 + (df["strength_of_schedule"] - raw_min) / (raw_max - raw_min) * 0.50
-            df["strength_of_schedule"] = df["strength_of_schedule"].round(4)
+        # 将 SoS 归一化到 ~ [0.3, 0.8]（按百分位线性映射）
+        if len(df) > 1:
+            raw_min = df["strength_of_schedule"].min()
+            raw_max = df["strength_of_schedule"].max()
+            if raw_max > raw_min:
+                df["strength_of_schedule"] = 0.30 + (df["strength_of_schedule"] - raw_min) / (raw_max - raw_min) * 0.50
+                df["strength_of_schedule"] = df["strength_of_schedule"].round(4)
 
     df.to_csv(OUTPUT_CSV, index=False, encoding="utf-8")
     log.info("✓ 写入 %s (%d 支队伍)", OUTPUT_CSV, len(df))

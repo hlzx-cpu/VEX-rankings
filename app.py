@@ -1,7 +1,7 @@
 """
 app.py
 ======
-VURC 2025-2026 实时战绩分析 Web 看板（Dash 前端）
+VURC 2026-2027 Override 实时战绩分析 Web 看板（Dash 前端）
 
 架构：
   - 使用 dcc.Interval 每 30 秒从 dashboard_data.csv 读取数据
@@ -16,7 +16,7 @@ VURC 2025-2026 实时战绩分析 Web 看板（Dash 前端）
   │  第二步：抓取数据（生成 dashboard_data.csv）      │
   │    python data_fetcher.py                        │
   │    # 首次运行约需 8-15 分钟（受 API 限速影响）    │
-  │    # 循环模式：python data_fetcher.py --loop 600 │
+    │    # 循环模式：python data_fetcher.py --loop 21600 │
   │                                                  │
   │  第三步：启动看板                                │
   │    python app.py                                 │
@@ -25,7 +25,7 @@ VURC 2025-2026 实时战绩分析 Web 看板（Dash 前端）
 
 环境变量：
   在项目根目录创建 .env 文件，写入：
-    ROBOTEVENTS_TOKEN=你的Token
+    当前公共数据源不需要 ROBOTEVENTS_TOKEN
 """
 
 import threading
@@ -42,7 +42,7 @@ from dash import Input, Output, State, dcc, html, dash_table, callback_context
 DATA_CSV = Path(__file__).parent / "dashboard_data.csv"
 
 # ─── 初始化 Dash ─────────────────────────────────────────────────────────────────
-app = dash.Dash(__name__, title="VURC 2025-2026 战绩看板")
+app = dash.Dash(__name__, title="VURC 2026-2027 Override 战绩看板")
 server = app.server
 
 # ─── 布局 ────────────────────────────────────────────────────────────────────────
@@ -64,7 +64,7 @@ app.layout = html.Div(
             },
             children=[
                 html.H2(
-                    "VURC 2025-2026 实时战绩看板",
+                    "VURC 2026-2027 Override 实时战绩看板",
                     style={"margin": 0, "color": "#1a1a2e", "fontSize": "22px"},
                 ),
                 html.Div(
@@ -286,7 +286,7 @@ def render_chart(records, selected_teams):
         title=dict(
             text=(
                 "Elo vs Strength of Schedule, Skills Scores "
-                "(Driver = Color, Programming = Size) ---VURC--- 2025-2026"
+                "(Driver = Color, Programming = Size) ---VURC--- 2026-2027"
             ),
             x=0, xanchor="left", font=dict(size=13),
         ),
@@ -381,7 +381,7 @@ def _mock_df() -> pd.DataFrame:
 # ─── 入口 ────────────────────────────────────────────────────────────────────────
 if __name__ == "__main__":
     print("=" * 55)
-    print("  VURC 2025-2026 实时战绩看板")
+    print("  VURC 2026-2027 Override 实时战绩看板")
     print("  访问: http://localhost:8050")
     print("  图表每 30 秒自动刷新 dashboard_data.csv")
     print("=" * 55)
